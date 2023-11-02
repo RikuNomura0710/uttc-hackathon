@@ -1,5 +1,3 @@
-import { _userList } from 'src/_mock/_user';
-
 import { UserEditView } from 'src/sections/user/view';
 
 // ----------------------------------------------------------------------
@@ -26,8 +24,20 @@ export default function UserEditPage() {
   return <UserEditView id={id} />;
 }
 
+// export async function generateStaticParams() {
+//   return _userList.map((user) => ({
+//     id: user.id,
+//   }));
+// }
 export async function generateStaticParams() {
-  return _userList.map((user) => ({
+  // ダミーデータを作成
+  const dummyUserList = [
+    { id: 'dummy-id-1' },
+    { id: 'dummy-id-2' },
+    // ...他のダミーユーザー
+  ];
+
+  return dummyUserList.map((user) => ({
     id: user.id,
   }));
 }
