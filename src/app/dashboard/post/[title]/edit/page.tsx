@@ -15,26 +15,22 @@ type Props = {
   };
 };
 
-export default function PostEditPage({ params }: Props) {
-  const { title } = params;
+// export default function PostEditPage({ params }: Props) {
+//   const { title } = params;
+
+//   return <PostEditView title={title} />;
+// }
+
+export default function PostEditPage() {
+  const title = 'dummy-title';
 
   return <PostEditView title={title} />;
 }
 
-// export async function generateStaticParams() {
-//   const res = await axios.get(endpoints.post.list);
-
-//   return res.data.posts.map((post: { title: string }) => ({
-//     title: paramCase(post.title),
-//   }));
-// }
-
-export async function getStaticPaths() {
+export async function generateStaticParams() {
   const res = await axios.get(endpoints.post.list);
 
-  const paths = res.data.posts.map((post: { title: string }) => ({
-    params: { title: paramCase(post.title) },
+  return res.data.posts.map((post: { title: string }) => ({
+    title: paramCase(post.title),
   }));
-
-  return { paths, fallback: false };
 }
