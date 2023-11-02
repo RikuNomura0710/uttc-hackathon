@@ -1,27 +1,27 @@
-import { _userList } from 'src/_mock/_user';
+// import { _userList } from 'src/_mock/_user';
 
-import { UserEditView } from 'src/sections/user/view';
+// import { UserEditView } from 'src/sections/user/view';
 
-// ----------------------------------------------------------------------
+// // ----------------------------------------------------------------------
 
-export const metadata = {
-  title: 'Dashboard: User Edit',
-};
+// export const metadata = {
+//   title: 'Dashboard: User Edit',
+// };
 
-type Props = {
-  params: {
-    id: string;
-  };
-};
+// type Props = {
+//   params: {
+//     id: string;
+//   };
+// };
 
-export default function UserEditPage({ params }: Props) {
-  const { id } = params;
+// export default function UserEditPage({ params }: Props) {
+//   const { id } = params;
 
-  return <UserEditView id={id} />;
-}
+//   return <UserEditView id={id} />;
+// }
 
-export async function generateStaticParams() {
-  return _userList.map((user) => ({
-    id: user.id,
-  }));
-}
+// export async function generateStaticParams() {
+//   return _userList.map((user) => ({
+//     id: user.id,
+//   }));
+// }
