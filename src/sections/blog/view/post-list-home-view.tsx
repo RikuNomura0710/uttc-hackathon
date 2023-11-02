@@ -58,7 +58,7 @@ export default function PostListHomeView() {
           my: { xs: 3, md: 5 },
         }}
       >
-        技術ブログ
+        技術
       </Typography>
 
       <Stack
