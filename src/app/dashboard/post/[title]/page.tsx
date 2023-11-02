@@ -21,10 +21,19 @@ export default function PostDetailsPage({ params }: Props) {
   return <PostDetailsView title={title} />;
 }
 
-export async function generateStaticParams() {
+// export async function generateStaticParams() {
+//   const res = await axios.get(endpoints.post.list);
+
+//   return res.data.posts.map((post: { title: string }) => ({
+//     title: paramCase(post.title),
+//   }));
+// }
+export async function getStaticPaths() {
   const res = await axios.get(endpoints.post.list);
 
-  return res.data.posts.map((post: { title: string }) => ({
-    title: paramCase(post.title),
+  const paths = res.data.posts.map((post: { title: string }) => ({
+    params: { title: paramCase(post.title) },
   }));
+
+  return { paths, fallback: false };
 }
