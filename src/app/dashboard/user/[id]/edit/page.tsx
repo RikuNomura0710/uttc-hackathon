@@ -14,8 +14,14 @@ type Props = {
   };
 };
 
-export default function UserEditPage({ params }: Props) {
-  const { id } = params;
+// export default function UserEditPage({ params }: Props) {
+//   const { id } = params;
+
+//   return <UserEditView id={id} />;
+// }
+
+export default function UserEditPage() {
+  const id = 'dummy-id';
 
   return <UserEditView id={id} />;
 }
