@@ -45,7 +45,8 @@ export const paths = {
   },
   post: {
     root: `/post`,
-    details: (title: string) => `/post/${paramCase(title)}`,
+    // details: (title: string) => `/post/${paramCase(title)}`,
+    details: (title: string) => `/post/${title}`,
     demo: {
       details: `/post/${paramCase(MOCK_TITLE)}`,
     },
@@ -142,8 +143,10 @@ export const paths = {
     post: {
       root: `${ROOTS.DASHBOARD}/post`,
       new: `${ROOTS.DASHBOARD}/post/new`,
-      details: (title: string) => `${ROOTS.DASHBOARD}/post/${paramCase(title)}`,
-      edit: (title: string) => `${ROOTS.DASHBOARD}/post/${paramCase(title)}/edit`,
+      // details: (title: string) => `${ROOTS.DASHBOARD}/post/${paramCase(title)}`,
+      // edit: (title: string) => `${ROOTS.DASHBOARD}/post/${paramCase(title)}/edit`,
+      details: (title: string) => `${ROOTS.DASHBOARD}/post/${title}`,
+      edit: (title: string) => `${ROOTS.DASHBOARD}/post/${title}/edit`,
       demo: {
         details: `${ROOTS.DASHBOARD}/post/${paramCase(MOCK_TITLE)}`,
         edit: `${ROOTS.DASHBOARD}/post/${paramCase(MOCK_TITLE)}/edit`,

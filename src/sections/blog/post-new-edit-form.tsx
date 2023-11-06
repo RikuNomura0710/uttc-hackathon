@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMemo, useEffect, useCallback } from 'react';
 
-import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -20,16 +19,9 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { _tags } from 'src/_mock';
-
 import { CustomFile } from 'src/components/upload';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, {
-  RHFEditor,
-  RHFUpload,
-  RHFTextField,
-  RHFAutocomplete,
-} from 'src/components/hook-form';
+import FormProvider, { RHFEditor, RHFUpload, RHFTextField } from 'src/components/hook-form';
 
 import { IPostItem } from 'src/types/blog';
 
@@ -38,7 +30,7 @@ import PostDetailsPreview from './post-details-preview';
 // ----------------------------------------------------------------------
 
 type Props = {
-  currentPost?: IPostItem;
+  currentPost?: IPostItem | null;
 };
 
 export default function PostNewEditForm({ currentPost }: Props) {
@@ -55,8 +47,8 @@ export default function PostNewEditForm({ currentPost }: Props) {
     description: Yup.string().required('Description is required'),
     content: Yup.string().required('Content is required'),
     coverUrl: Yup.mixed<any>().nullable().required('Cover is required'),
-    tags: Yup.array().min(2, 'Must have at least 2 tags'),
-    metaKeywords: Yup.array().min(1, 'Meta keywords is required'),
+    // tags: Yup.array().min(2, 'Must have at least 2 tags'),
+    // metaKeywords: Yup.array().min(1, 'Meta keywords is required'),
     // not required
     metaTitle: Yup.string(),
     metaDescription: Yup.string(),
@@ -68,8 +60,8 @@ export default function PostNewEditForm({ currentPost }: Props) {
       description: currentPost?.description || '',
       content: currentPost?.content || '',
       coverUrl: currentPost?.coverUrl || null,
-      tags: currentPost?.tags || [],
-      metaKeywords: currentPost?.metaKeywords || [],
+      // tags: currentPost?.tags || [],
+      // metaKeywords: currentPost?.metaKeywords || [],
       metaTitle: currentPost?.metaTitle || '',
       metaDescription: currentPost?.metaDescription || '',
     }),
@@ -97,14 +89,70 @@ export default function PostNewEditForm({ currentPost }: Props) {
     }
   }, [currentPost, defaultValues, reset]);
 
+  // const onSubmit = handleSubmit(async (data) => {
+  //   try {
+  //     await new Promise((resolve) => setTimeout(resolve, 500));
+  //     reset();
+  //     preview.onFalse();
+  //     enqueueSnackbar(currentPost ? 'Update success!' : 'Create success!');
+  //     router.push(paths.dashboard.post.root);
+  //     console.info('DATA', data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // });
+  // const onSubmit = handleSubmit(async (data) => {
+  //   try {
+  //     const { coverUrl, ...restData } = data; // coverUrlを削除
+  //     const postData = [{ ...restData, author: { ID: 1 } }]; // Post構造体の他のフィールドを設定
+  //     const response = await fetch('http://localhost:8080/create-posts', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(postData),
+  //     });
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       console.error('Error:', errorData.error);
+  //       throw new Error(`Network response was not ok ${response.statusText}`);
+  //     }
+  //     reset();
+  //     preview.onFalse();
+  //     enqueueSnackbar(currentPost ? 'Update success!' : 'Create success!');
+  //     router.push(paths.dashboard.post.root);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // });
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const { coverUrl, ...restData } = data; // coverUrlを削除
+      const postData = { ...restData, author: { ID: 1 } }; // Post構造体の他のフィールドを設定
+      const url = currentPost
+        ? // ? `http://localhost:8080/edit/${encodeURIComponent(currentPost.title)}` // 更新用URL
+          `http://localhost:8080/edit/${currentPost.title}`
+        : 'http://localhost:8080/create-post'; // 新規作成用URL
+      const method = currentPost ? 'PUT' : 'POST'; // 更新はPUT、新規作成はPOST
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error:', errorData.error);
+        throw new Error(`Network response was not ok ${response.statusText}`);
+      }
+
       reset();
       preview.onFalse();
-      enqueueSnackbar(currentPost ? 'Update success!' : 'Create success!');
+      enqueueSnackbar(currentPost ? '更新しました！' : '投稿しました！');
       router.push(paths.dashboard.post.root);
-      console.info('DATA', data);
     } catch (error) {
       console.error(error);
     }
@@ -137,7 +185,7 @@ export default function PostNewEditForm({ currentPost }: Props) {
             詳細
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            タイトル, 説明, 画像...
+            タイトル, カテゴリー、説明, 画像...
           </Typography>
         </Grid>
       )}
@@ -148,6 +196,8 @@ export default function PostNewEditForm({ currentPost }: Props) {
 
           <Stack spacing={3} sx={{ p: 3 }}>
             <RHFTextField name="title" label="タイトル" />
+
+            <RHFTextField name="category" label="カテゴリー" />
 
             <RHFTextField name="description" label="説明" multiline rows={3} />
 
@@ -189,7 +239,7 @@ export default function PostNewEditForm({ currentPost }: Props) {
           {!mdUp && <CardHeader title="Properties" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
-            <RHFAutocomplete
+            {/* <RHFAutocomplete
               name="tags"
               label="タグ"
               placeholder="+ Tags"
@@ -214,13 +264,13 @@ export default function PostNewEditForm({ currentPost }: Props) {
                   />
                 ))
               }
-            />
+            /> */}
 
             <RHFTextField name="metaTitle" label="タイトル" />
 
             <RHFTextField name="metaDescription" label="説明" fullWidth multiline rows={3} />
 
-            <RHFAutocomplete
+            {/* <RHFAutocomplete
               name="metaKeywords"
               label="キーワード"
               placeholder="+ Keywords"
@@ -246,9 +296,12 @@ export default function PostNewEditForm({ currentPost }: Props) {
                   />
                 ))
               }
-            />
+            /> */}
 
-            <FormControlLabel control={<Switch defaultChecked />} label="コメントを許可" />
+            <FormControlLabel
+              control={<Switch defaultChecked color="info" />}
+              label="コメントを許可"
+            />
           </Stack>
         </Card>
       </Grid>
@@ -260,7 +313,7 @@ export default function PostNewEditForm({ currentPost }: Props) {
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
         <FormControlLabel
-          control={<Switch defaultChecked />}
+          control={<Switch defaultChecked color="info" />}
           label="公開する"
           sx={{ flexGrow: 1, pl: 3 }}
         />

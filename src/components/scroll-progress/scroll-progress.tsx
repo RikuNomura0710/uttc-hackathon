@@ -11,7 +11,7 @@ export interface ScrollProgressProps extends BoxProps {
 }
 
 export default function ScrollProgress({
-  color = 'primary',
+  color = 'info',
   size = 3,
   scrollYProgress,
   sx,

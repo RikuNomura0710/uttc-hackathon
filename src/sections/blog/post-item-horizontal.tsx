@@ -153,7 +153,7 @@ export default function PostItemHorizontal({ post }: Props) {
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          View
+          閲覧
         </MenuItem>
 
         <MenuItem

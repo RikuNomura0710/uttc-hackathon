@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 import { fetcher, endpoints } from 'src/utils/axios';
 
@@ -7,43 +7,109 @@ import { IPostItem } from 'src/types/blog';
 
 // ----------------------------------------------------------------------
 
+// export function useGetPosts() {
+//   // const URL = endpoints.post.list;
+//   const URL = '/posts';
+
+//   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+
+//   const memoizedValue = useMemo(
+//     () => ({
+//       posts: (data?.posts as IPostItem[]) || [],
+//       postsLoading: isLoading,
+//       postsError: error,
+//       postsValidating: isValidating,
+//       postsEmpty: !isLoading && !data?.posts.length,
+//     }),
+//     [data?.posts, error, isLoading, isValidating]
+//   );
+
+//   return memoizedValue;
+// }
+
 export function useGetPosts() {
-  const URL = endpoints.post.list;
+  const [posts, setPosts] = useState<IPostItem[]>([]);
+  const [postsLoading, setPostsLoading] = useState(true);
+  const [postsError, setPostsError] = useState(null);
 
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+  useEffect(() => {
+    fetch('http://localhost:8080/posts')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Network response was not ok ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setPosts(data.posts);
+        setPostsLoading(false);
+      })
+      .catch((error) => {
+        setPostsError(error);
+        setPostsLoading(false);
+      });
+  }, []);
 
-  const memoizedValue = useMemo(
-    () => ({
-      posts: (data?.posts as IPostItem[]) || [],
-      postsLoading: isLoading,
-      postsError: error,
-      postsValidating: isValidating,
-      postsEmpty: !isLoading && !data?.posts.length,
-    }),
-    [data?.posts, error, isLoading, isValidating]
-  );
-
-  return memoizedValue;
+  return {
+    posts,
+    postsLoading,
+    postsError,
+    postsEmpty: posts.length === 0,
+  };
 }
 
 // ----------------------------------------------------------------------
 
+// export function useGetPost(title: string) {
+//   const URL = title ? [endpoints.post.details, { params: { title } }] : '';
+
+//   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+
+//   const memoizedValue = useMemo(
+//     () => ({
+//       post: data?.post as IPostItem,
+//       postLoading: isLoading,
+//       postError: error,
+//       postValidating: isValidating,
+//     }),
+//     [data?.post, error, isLoading, isValidating]
+//   );
+
+//   return memoizedValue;
+// }
 export function useGetPost(title: string) {
-  const URL = title ? [endpoints.post.details, { params: { title } }] : '';
+  const [post, setPost] = useState<IPostItem | null>(null);
+  const [postLoading, setPostLoading] = useState(true);
+  const [postError, setPostError] = useState<Error | null>(null);
 
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+  useEffect(() => {
+    if (title) {
+      fetch(`http://localhost:8080/posts/${title}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Network response was not ok ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setPost(data.post);
+          setPostLoading(false);
+        })
+        .catch((error) => {
+          setPostError(error);
+          setPostLoading(false);
+        });
+    } else {
+      setPostLoading(false);
+    }
+  }, [title]);
 
-  const memoizedValue = useMemo(
-    () => ({
-      post: data?.post as IPostItem,
-      postLoading: isLoading,
-      postError: error,
-      postValidating: isValidating,
-    }),
-    [data?.post, error, isLoading, isValidating]
-  );
-
-  return memoizedValue;
+  return {
+    post,
+    postLoading,
+    postError,
+    postEmpty: post === null,
+  };
 }
 
 // ----------------------------------------------------------------------
