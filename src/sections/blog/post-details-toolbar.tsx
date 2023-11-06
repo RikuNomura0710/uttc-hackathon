@@ -1,19 +1,30 @@
+import { useState } from 'react';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
+import DialogTitle from '@mui/material/DialogTitle';
 import Stack, { StackProps } from '@mui/material/Stack';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
 
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
 import Iconify from 'src/components/iconify';
+import { useSnackbar } from 'src/components/snackbar';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
 type Props = StackProps & {
+  title: string;
   backLink: string;
   editLink: string;
   liveLink: string;
@@ -26,6 +37,7 @@ type Props = StackProps & {
 };
 
 export default function PostDetailsToolbar({
+  title,
   category,
   backLink,
   editLink,
@@ -36,6 +48,48 @@ export default function PostDetailsToolbar({
   ...other
 }: Props) {
   const popover = usePopover();
+  const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpenDialog(true);
+  };
+
+  const handleClose = () => {
+    setOpenDialog(false);
+  };
+
+  // handleDeleteの中のwindow.confirmの代わりにこれを使用します
+  const handleConfirmDelete = () => {
+    // ここに削除のコードを移動します
+    handleDelete();
+    setOpenDialog(false);
+  };
+
+  const handleDelete = async () => {
+    // 確認ダイアログを表示するコードは後ほど追加します。
+    const confirm = window.confirm(`"${title}"を本当に削除しますか？`);
+    if (confirm) {
+      try {
+        // const response = await fetch(`http://localhost:8080/delete/${title}`, {
+        //   method: 'DELETE',
+        // });
+
+        // if (!response.ok) {
+        //   throw new Error('Something went wrong');
+        // }
+
+        // 成功した場合
+        enqueueSnackbar('削除しました！');
+        router.push(paths.dashboard.post.root);
+        console.log('Post deleted successfully');
+      } catch (error) {
+        console.error('Failed to delete the post', error);
+      }
+    }
+  };
 
   return (
     <>
@@ -58,15 +112,21 @@ export default function PostDetailsToolbar({
 
         <Box sx={{ flexGrow: 1 }} />
 
-        {category === '技術ブログ' && ( // ここについて
+        {/* {category === '技術ブログ' && ( // ここについて
           <Tooltip title="Go Live">
             <IconButton component={RouterLink} href={liveLink}>
               <Iconify icon="eva:external-link-fill" />
             </IconButton>
           </Tooltip>
-        )}
+        )} */}
 
-        <Tooltip title="Edit">
+        <Tooltip title="削除">
+          <IconButton onClick={() => handleClickOpen()} component={RouterLink} href={liveLink}>
+            <Iconify icon="eva:trash-2-outline" />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title="編集">
           <IconButton component={RouterLink} href={editLink}>
             <Iconify icon="solar:pen-bold" />
           </IconButton>
@@ -107,6 +167,27 @@ export default function PostDetailsToolbar({
           </MenuItem>
         ))}
       </CustomPopover>
+      <Dialog
+        open={openDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">削除確認</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            この投稿を本当に削除しますか？
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            キャンセル
+          </Button>
+          <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+            削除
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

@@ -17,7 +17,7 @@ export default function PostCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create a new post"
+        heading="投稿作成"
         links={[
           {
             name: 'UTTC',

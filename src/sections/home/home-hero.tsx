@@ -4,7 +4,6 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Rating from '@mui/material/Rating';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -189,8 +188,9 @@ export default function HomeHero() {
             textAlign: 'center',
           }}
         >
-          Start a <br />
-          New Project with
+          {/* Start a <br />
+          New Project with */}
+          技術ブログ
         </Typography>
       </m.div>
 
@@ -204,18 +204,25 @@ export default function HomeHero() {
             repeat: Infinity,
           }}
         >
-          Minimal
+          UTTC
         </StyledTextGradient>
       </m.div>
 
       <m.div variants={varFade().in}>
-        <Typography variant="body2" sx={{ textAlign: 'center' }}>
-          The starting point for your next project is based on MUI.Easy customization Helps you
-          build apps faster and better.
-        </Typography>
+        <Stack
+          spacing={0.75}
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          sx={{ my: 3 }}
+        >
+          <Typography variant="body2" sx={{ textAlign: 'center' }}>
+            あなたのその技術をみんなと共有しよう
+          </Typography>
+        </Stack>
       </m.div>
 
-      <m.div variants={varFade().in}>
+      {/* <m.div variants={varFade().in}>
         <Stack
           spacing={0.75}
           direction="row"
@@ -231,7 +238,7 @@ export default function HomeHero() {
             (99+ reviews)
           </Typography>
         </Stack>
-      </m.div>
+      </m.div> */}
 
       <m.div variants={varFade().in}>
         <Stack spacing={1.5} direction={{ xs: 'column-reverse', sm: 'row' }} sx={{ mb: 5 }}>
@@ -244,7 +251,7 @@ export default function HomeHero() {
               variant="contained"
               startIcon={<Iconify icon="eva:flash-fill" width={24} />}
             >
-              Live Preview
+              ログイン
             </Button>
 
             <Link
@@ -268,13 +275,13 @@ export default function HomeHero() {
             color="inherit"
             size="large"
             variant="outlined"
-            startIcon={<Iconify icon="eva:external-link-fill" width={24} />}
+            startIcon={<Iconify icon="eva:external-link-fill" width={24} />} // ここを変える
             target="_blank"
             rel="noopener"
             href={paths.figma}
             sx={{ borderColor: 'text.primary' }}
           >
-            Design Preview
+            登録する
           </Button>
         </Stack>
       </m.div>

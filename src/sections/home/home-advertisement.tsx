@@ -32,8 +32,8 @@ export default function HomeAdvertisement() {
         variants={varFade().inDown}
         sx={{ color: 'common.white', mb: 5, typography: 'h2' }}
       >
-        Get started with
-        <br /> Minimal kit today
+        UTTC技術ブログ
+        <br /> を始めよう
       </Box>
 
       <Stack
@@ -48,13 +48,13 @@ export default function HomeAdvertisement() {
             variant="contained"
             target="_blank"
             rel="noopener"
-            href={paths.minimalUI}
+            href={paths.minimalUI} // ここを変える
             sx={{
               color: 'grey.800',
               bgcolor: 'common.white',
             }}
           >
-            Purchase Now
+            ログイン
           </Button>
         </m.div>
 
@@ -102,8 +102,8 @@ export default function HomeAdvertisement() {
         sx={{
           ...bgGradient({
             direction: '135deg',
-            startColor: theme.palette.primary.main,
-            endColor: theme.palette.primary.dark,
+            startColor: theme.palette.info.main,
+            endColor: theme.palette.info.dark,
           }),
           borderRadius: 2,
           pb: { xs: 5, md: 0 },

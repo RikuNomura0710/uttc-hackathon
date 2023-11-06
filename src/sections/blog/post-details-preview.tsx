@@ -48,11 +48,11 @@ export default function PostDetailsPreview({
     <Dialog fullScreen open={open} onClose={onClose}>
       <DialogActions sx={{ py: 2, px: 3 }}>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Preview
+          プレビュー
         </Typography>
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          キャンセル
         </Button>
 
         <LoadingButton
@@ -62,7 +62,7 @@ export default function PostDetailsPreview({
           loading={isSubmitting}
           onClick={onSubmit}
         >
-          Post
+          投稿
         </LoadingButton>
       </DialogActions>
 

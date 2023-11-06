@@ -53,7 +53,7 @@ export default function HomeView() {
 
   return (
     <MainLayout>
-      <ScrollProgress scrollYProgress={scrollYProgress} />
+      <ScrollProgress color="info" scrollYProgress={scrollYProgress} />
 
       <HomeHero />
 

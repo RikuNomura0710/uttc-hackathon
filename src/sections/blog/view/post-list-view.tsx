@@ -48,6 +48,7 @@ export default function PostListView() {
   const debouncedQuery = useDebounce(searchQuery);
 
   const { posts, postsLoading } = useGetPosts();
+  console.log(posts);
 
   const { searchResults, searchLoading } = useSearchPosts(debouncedQuery);
 
@@ -74,7 +75,7 @@ export default function PostListView() {
 
   const handleFilterCategory = useCallback(
     (event: React.SyntheticEvent, newValue: string) => {
-      handleFilters('publish', newValue); // ここかえる
+      handleFilters('category', newValue); // ここかえる
     },
     [handleFilters]
   );

@@ -48,12 +48,7 @@ export default function PostCommentForm() {
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Stack spacing={3}>
-        <RHFTextField
-          name="comment"
-          placeholder="Write some of your comments..."
-          multiline
-          rows={4}
-        />
+        <RHFTextField name="comment" placeholder="内容をお書きください..." multiline rows={4} />
 
         <Stack direction="row" alignItems="center">
           <Stack direction="row" alignItems="center" flexGrow={1}>

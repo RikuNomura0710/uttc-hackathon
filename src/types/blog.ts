@@ -39,10 +39,37 @@ export type IPostComment = {
   }[];
 };
 
+// export type IPostItem = {
+//   id: string;
+//   title: string;
+//   tags: string[];
+//   // publish: string;
+//   category: string;
+//   content: string;
+//   coverUrl: string;
+//   metaTitle: string;
+//   totalViews: number;
+//   totalShares: number;
+//   description: string;
+//   totalComments: number;
+//   totalFavorites: number;
+//   metaKeywords: string[];
+//   metaDescription: string;
+//   comments: IPostComment[];
+//   createdAt: Date;
+//   favoritePerson: {
+//     name: string;
+//     avatarUrl: string;
+//   }[];
+//   author: {
+//     name: string;
+//     avatarUrl: string;
+//   };
+// };
 export type IPostItem = {
   id: string;
   title: string;
-  tags: string[];
+  // tags: string;
   // publish: string;
   category: string;
   content: string;
@@ -53,14 +80,14 @@ export type IPostItem = {
   description: string;
   totalComments: number;
   totalFavorites: number;
-  metaKeywords: string[];
+  // metaKeywords: string;
   metaDescription: string;
-  comments: IPostComment[];
+  // comments: IPostComment[];
   createdAt: Date;
-  favoritePerson: {
-    name: string;
-    avatarUrl: string;
-  }[];
+  // favoritePerson: {
+  //   name: string;
+  //   avatarUrl: string;
+  // }[];
   author: {
     name: string;
     avatarUrl: string;
