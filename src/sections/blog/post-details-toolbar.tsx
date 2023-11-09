@@ -70,24 +70,22 @@ export default function PostDetailsToolbar({
 
   const handleDelete = async () => {
     // 確認ダイアログを表示するコードは後ほど追加します。
-    const confirm = window.confirm(`"${title}"を本当に削除しますか？`);
-    if (confirm) {
-      try {
-        // const response = await fetch(`http://localhost:8080/delete/${title}`, {
-        //   method: 'DELETE',
-        // });
 
-        // if (!response.ok) {
-        //   throw new Error('Something went wrong');
-        // }
+    try {
+      const response = await fetch(`http://localhost:8080/delete/${title}`, {
+        method: 'DELETE',
+      });
 
-        // 成功した場合
-        enqueueSnackbar('削除しました！');
-        router.push(paths.dashboard.post.root);
-        console.log('Post deleted successfully');
-      } catch (error) {
-        console.error('Failed to delete the post', error);
+      if (!response.ok) {
+        throw new Error('Something went wrong');
       }
+
+      // 成功した場合
+      enqueueSnackbar('削除しました！');
+      router.push(paths.dashboard.post.root);
+      console.log('Post deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete the post', error);
     }
   };
 
@@ -120,8 +118,13 @@ export default function PostDetailsToolbar({
           </Tooltip>
         )} */}
 
-        <Tooltip title="削除">
+        {/* <Tooltip title="削除">
           <IconButton onClick={() => handleClickOpen()} component={RouterLink} href={liveLink}>
+            <Iconify icon="eva:trash-2-outline" />
+          </IconButton>
+        </Tooltip> */}
+        <Tooltip title="削除">
+          <IconButton onClick={handleClickOpen}>
             <Iconify icon="eva:trash-2-outline" />
           </IconButton>
         </Tooltip>
@@ -173,17 +176,19 @@ export default function PostDetailsToolbar({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">削除確認</DialogTitle>
+        <DialogTitle id="alert-dialog-title">この投稿を本当に削除しますか？</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            この投稿を本当に削除しますか？
+            この投稿は{title}です。削除すると元に戻せません。
+            <br />
+            この投稿を削除してもよろしいですか？
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} color="info">
             キャンセル
           </Button>
-          <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+          <Button onClick={handleConfirmDelete} color="error" autoFocus>
             削除
           </Button>
         </DialogActions>

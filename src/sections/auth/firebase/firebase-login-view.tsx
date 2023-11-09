@@ -100,13 +100,18 @@ export default function FirebaseLoginView() {
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">Sign in to Minimal</Typography>
+      <Typography variant="h4">UTTCナレッジベースに登録する</Typography>
 
       <Stack direction="row" spacing={0.5}>
-        <Typography variant="body2">New user?</Typography>
+        <Typography variant="body2">未登録ですか？</Typography>
 
-        <Link component={RouterLink} href={paths.auth.firebase.register} variant="subtitle2">
-          Create an account
+        <Link
+          component={RouterLink}
+          href={paths.auth.firebase.register}
+          variant="subtitle2"
+          color="info"
+        >
+          アカウント作成
         </Link>
       </Stack>
     </Stack>
@@ -141,7 +146,7 @@ export default function FirebaseLoginView() {
         underline="always"
         sx={{ alignSelf: 'flex-end' }}
       >
-        Forgot password?
+        パスワードをお忘れですか？
       </Link>
 
       <LoadingButton
@@ -152,7 +157,7 @@ export default function FirebaseLoginView() {
         variant="contained"
         loading={isSubmitting}
       >
-        Login
+        ログイン
       </LoadingButton>
     </Stack>
   );

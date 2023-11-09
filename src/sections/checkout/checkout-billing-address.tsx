@@ -1,16 +1,17 @@
+// @mui
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
-
-import { useBoolean } from 'src/hooks/use-boolean';
-
+// _mock
 import { _addressBooks } from 'src/_mock';
-
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+// components
 import Iconify from 'src/components/iconify';
-
+//
 import { useCheckoutContext } from './context';
 import CheckoutSummary from './checkout-summary';
-import { AddressItem, AddressNewForm } from '../address';
+import { AddressNewForm, AddressItem } from '../address';
 
 // ----------------------------------------------------------------------
 

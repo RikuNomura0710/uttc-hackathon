@@ -99,7 +99,7 @@ export default function UserNewEditForm({ currentUser }: Props) {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
-      enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
+      enqueueSnackbar(currentUser ? '更新しました!' : '新規作成しました!');
       router.push(paths.dashboard.user.list);
       console.info('DATA', data);
     } catch (error) {
@@ -156,8 +156,8 @@ export default function UserNewEditForm({ currentUser }: Props) {
                       color: 'text.disabled',
                     }}
                   >
-                    Allowed *.jpeg, *.jpg, *.png, *.gif
-                    <br /> max size of {fData(3145728)}
+                    *.jpeg, *.jpg, *.png, *.gifが使えます。
+                    <br /> 最大サイズは {fData(3145728)}
                   </Typography>
                 }
               />
@@ -232,8 +232,8 @@ export default function UserNewEditForm({ currentUser }: Props) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="name" label="Full Name" />
-              <RHFTextField name="email" label="Email Address" />
+              <RHFTextField name="名前" label="名前" />
+              <RHFTextField name="期生" label="Email Address" />
               <RHFTextField name="phoneNumber" label="Phone Number" />
 
               <RHFAutocomplete

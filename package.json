@@ -46,7 +46,7 @@
     "axios": "^1.5.1",
     "date-fns": "^2.30.0",
     "encoding": "^0.1.13",
-    "firebase": "^10.4.0",
+    "firebase": "^10.5.2",
     "framer-motion": "^10.16.4",
     "highlight.js": "^11.8.0",
     "i18next": "^23.5.1",

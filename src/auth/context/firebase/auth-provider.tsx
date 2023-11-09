@@ -1,6 +1,7 @@
 'use client';
 
 import { initializeApp } from 'firebase/app';
+// import { getAnalytics } from 'firebase/analytics';
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
 import { doc, getDoc, setDoc, collection, getFirestore } from 'firebase/firestore';
 import {
@@ -31,6 +32,8 @@ import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
 // ----------------------------------------------------------------------
 
 const firebaseApp = initializeApp(FIREBASE_API);
+
+// const analytics = getAnalytics(firebaseApp);
 
 const AUTH = getAuth(firebaseApp);
 
@@ -135,8 +138,15 @@ export function AuthProvider({ children }: Props) {
 
   const loginWithGoogle = useCallback(async () => {
     const provider = new GoogleAuthProvider();
+    const { user } = await signInWithPopup(AUTH, provider);
 
-    await signInWithPopup(AUTH, provider);
+    const userProfile = doc(collection(DB, 'users'), user.uid);
+    await setDoc(userProfile, {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+      // 他に保存したいユーザー情報をここに追加
+    });
   }, []);
 
   const loginWithGithub = useCallback(async () => {

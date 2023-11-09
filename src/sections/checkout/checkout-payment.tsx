@@ -1,20 +1,20 @@
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
+// @mui
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import LoadingButton from '@mui/lab/LoadingButton';
-
-import Iconify from 'src/components/iconify';
-import FormProvider from 'src/components/hook-form';
-
+// types
 import {
   ICheckoutCardOption,
   ICheckoutPaymentOption,
   ICheckoutDeliveryOption,
 } from 'src/types/checkout';
-
+// components
+import Iconify from 'src/components/iconify';
+import FormProvider from 'src/components/hook-form';
+//
 import { useCheckoutContext } from './context';
 import CheckoutSummary from './checkout-summary';
 import CheckoutDelivery from './checkout-delivery';
