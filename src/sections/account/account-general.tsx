@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
-import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMemo, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -11,56 +11,49 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-
 import { fData } from 'src/utils/format-number';
 
-import { countries } from 'src/assets/data';
-
-import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, {
-  RHFSwitch,
-  RHFTextField,
-  RHFUploadAvatar,
-  RHFAutocomplete,
-} from 'src/components/hook-form';
+import FormProvider, { RHFSwitch, RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
+
+import { IUserProfileUTTC } from 'src/types/user';
 
 // ----------------------------------------------------------------------
+type Props = {
+  currentProfile?: IUserProfileUTTC | null;
+};
 
-export default function AccountGeneral() {
+export default function AccountGeneral({ currentProfile }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useMockedUser();
-
   const UpdateUserSchema = Yup.object().shape({
-    displayName: Yup.string().required('Name is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    photoURL: Yup.mixed<any>().nullable().required('Avatar is required'),
-    phoneNumber: Yup.string().required('Phone number is required'),
-    country: Yup.string().required('Country is required'),
-    address: Yup.string().required('Address is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
-    zipCode: Yup.string().required('Zip code is required'),
-    about: Yup.string().required('About is required'),
-    // not required
+    displayName: Yup.string().required('名前は必須です'),
+    photoURL: Yup.mixed<any>().nullable().required('写真は必須です'),
+    class: Yup.string().required('クラスは必須です'),
+    faculty: Yup.string().required('学部は必須です'),
+    department: Yup.string().required('学科は必須です'),
+    grade: Yup.string().required('学年は必須です'),
+    can: Yup.string().required('技術スタックは必須です'),
+    did: Yup.string().required('どのような技術プロジェクトに携わってきましたか？'),
+    will: Yup.string().required('どのような技術やプロジェクトに携わりたいですか？'),
     isPublic: Yup.boolean(),
   });
 
-  const defaultValues = {
-    displayName: user?.displayName || '',
-    email: user?.email || '',
-    photoURL: user?.photoURL || null,
-    phoneNumber: user?.phoneNumber || '',
-    country: user?.country || '',
-    address: user?.address || '',
-    state: user?.state || '',
-    city: user?.city || '',
-    zipCode: user?.zipCode || '',
-    about: user?.about || '',
-    isPublic: user?.isPublic || false,
-  };
+  const defaultValues = useMemo(
+    () => ({
+      displayName: currentProfile?.displayName || '',
+      photoURL: currentProfile?.photoURL || null,
+      class: currentProfile?.class || '',
+      faculty: currentProfile?.faculty || '',
+      department: currentProfile?.department || '',
+      grade: currentProfile?.grade || '',
+      can: currentProfile?.can || '',
+      did: currentProfile?.did || '',
+      will: currentProfile?.will || '',
+      isPublic: currentProfile?.isPublic || false,
+    }),
+    [currentProfile]
+  );
 
   const methods = useForm({
     resolver: yupResolver(UpdateUserSchema),
@@ -68,16 +61,44 @@ export default function AccountGeneral() {
   });
 
   const {
+    reset,
     setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
+  useEffect(() => {
+    if (currentProfile) {
+      reset(defaultValues);
+    }
+  }, [currentProfile, defaultValues, reset]);
+
   const onSubmit = handleSubmit(async (data) => {
+    console.log(data);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      enqueueSnackbar('Update success!');
-      console.info('DATA', data);
+      const url = currentProfile
+        ? // ? `http://localhost:8080/edit/${encodeURIComponent(currentProfile.title)}` // 更新用URL
+          `http://localhost:8080/update-user/${currentProfile.id}`
+        : 'http://localhost:8080/create-user'; // 新規作成用URL
+      const method = currentProfile ? 'PUT' : 'POST'; // 更新はPUT、新規作成はPOST
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error:', errorData.error);
+        throw new Error(`Network response was not ok ${response.statusText}`);
+      }
+
+      reset();
+      enqueueSnackbar(currentProfile ? '更新しました！' : '投稿しました！');
+      // router.push(paths.dashboard.post.root);
     } catch (error) {
       console.error(error);
     }
@@ -118,8 +139,8 @@ export default function AccountGeneral() {
                     color: 'text.disabled',
                   }}
                 >
-                  Allowed *.jpeg, *.jpg, *.png, *.gif
-                  <br /> max size of {fData(3145728)}
+                  *.jpeg, *.jpg, *.png, *.gifが使えます。
+                  <br /> 最大サイズは {fData(3145728)}
                 </Typography>
               }
             />
@@ -127,12 +148,12 @@ export default function AccountGeneral() {
             <RHFSwitch
               name="isPublic"
               labelPlacement="start"
-              label="Public Profile"
+              label="プロフィールを公開"
               sx={{ mt: 5 }}
             />
 
             <Button variant="soft" color="error" sx={{ mt: 3 }}>
-              Delete User
+              削除する
             </Button>
           </Card>
         </Grid>
@@ -148,12 +169,13 @@ export default function AccountGeneral() {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="displayName" label="Name" />
-              <RHFTextField name="email" label="Email Address" />
-              <RHFTextField name="phoneNumber" label="Phone Number" />
-              <RHFTextField name="address" label="Address" />
+              <RHFTextField name="displayName" label="名前" />
+              <RHFTextField name="class" label="クラス" />
+              <RHFTextField name="faculty" label="学部" />
+              <RHFTextField name="department" label="学科" />
+              <RHFTextField name="grade" label="学年" />
 
-              <RHFAutocomplete
+              {/* <RHFAutocomplete
                 name="country"
                 label="Country"
                 options={countries.map((country) => country.label)}
@@ -179,18 +201,26 @@ export default function AccountGeneral() {
                     </li>
                   );
                 }}
-              />
-
-              <RHFTextField name="state" label="State/Region" />
-              <RHFTextField name="city" label="City" />
-              <RHFTextField name="zipCode" label="Zip/Code" />
+              /> */}
             </Box>
 
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
-              <RHFTextField name="about" multiline rows={4} label="About" />
+              <RHFTextField name="can" multiline rows={2} label="技術スタック" />
+              <RHFTextField
+                name="did"
+                multiline
+                rows={2}
+                label="どのような技術プロジェクトに携わってきましたか？"
+              />
+              <RHFTextField
+                name="will"
+                multiline
+                rows={2}
+                label="どのような技術やプロジェクトに携わりたいですか？"
+              />
 
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                Save Changes
+                {!currentProfile ? '投稿する' : '変更を保存'}
               </LoadingButton>
             </Stack>
           </Card>

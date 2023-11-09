@@ -1,18 +1,18 @@
 'use client';
 
 import uniq from 'lodash/uniq';
-import { useMemo, useEffect, useCallback } from 'react';
-
+import { useEffect, useMemo, useCallback } from 'react';
+// hooks
+import { useLocalStorage, getStorage } from 'src/hooks/use-local-storage';
+// routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-
-import { getStorage, useLocalStorage } from 'src/hooks/use-local-storage';
-
+// _mock
 import { PRODUCT_CHECKOUT_STEPS } from 'src/_mock/_product';
-
+// types
 import { IAddressItem } from 'src/types/address';
 import { ICheckoutItem } from 'src/types/checkout';
-
+//
 import { CheckoutContext } from './checkout-context';
 
 // ----------------------------------------------------------------------

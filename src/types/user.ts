@@ -12,6 +12,20 @@ export type IUserTableFilters = {
 
 // ----------------------------------------------------------------------
 
+export type IUserProfileUTTC = {
+  id: string;
+  displayName: string;
+  photoURL: CustomFile | string | null;
+  class: string;
+  faculty: string;
+  department: string;
+  grade: string;
+  can: string;
+  did: string;
+  will: string;
+  isPublic: boolean;
+};
+
 export type IUserSocialLink = {
   facebook: string;
   instagram: string;

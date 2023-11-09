@@ -1,12 +1,13 @@
+// @mui
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
-
+// types
+import { ICheckoutItem } from 'src/types/checkout';
+// components
 import Scrollbar from 'src/components/scrollbar';
 import { TableHeadCustom } from 'src/components/table';
-
-import { ICheckoutItem } from 'src/types/checkout';
-
+//
 import CheckoutCartProduct from './checkout-cart-product';
 
 // ----------------------------------------------------------------------

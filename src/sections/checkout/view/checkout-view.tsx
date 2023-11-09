@@ -1,16 +1,17 @@
 'use client';
 
+// @mui
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-
+// _mock
 import { PRODUCT_CHECKOUT_STEPS } from 'src/_mock/_product';
-
+// components
 import { useSettingsContext } from 'src/components/settings';
-
+//
+import { useCheckoutContext } from '../context';
 import CheckoutCart from '../checkout-cart';
 import CheckoutSteps from '../checkout-steps';
-import { useCheckoutContext } from '../context';
 import CheckoutPayment from '../checkout-payment';
 import CheckoutOrderComplete from '../checkout-order-complete';
 import CheckoutBillingAddress from '../checkout-billing-address';
