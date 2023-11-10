@@ -67,8 +67,9 @@ export type IPostComment = {
 //   };
 // };
 export type IPostItem = {
-  id: string;
+  ID: string;
   title: string;
+  authorId: string;
   // tags: string;
   // publish: string;
   category: string;

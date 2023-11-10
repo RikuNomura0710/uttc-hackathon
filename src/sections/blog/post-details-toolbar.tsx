@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -17,13 +17,19 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
+import { AuthContext } from 'src/auth/context/firebase/auth-context';
+
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
+import { IPostItem } from 'src/types/blog';
+
 // ----------------------------------------------------------------------
 
 type Props = StackProps & {
+  currentPost: IPostItem;
+  id: string;
   title: string;
   backLink: string;
   editLink: string;
@@ -37,6 +43,8 @@ type Props = StackProps & {
 };
 
 export default function PostDetailsToolbar({
+  currentPost,
+  id,
   title,
   category,
   backLink,
@@ -47,6 +55,7 @@ export default function PostDetailsToolbar({
   sx,
   ...other
 }: Props) {
+  const { user } = useContext(AuthContext);
   const popover = usePopover();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
@@ -54,6 +63,10 @@ export default function PostDetailsToolbar({
   const [openDialog, setOpenDialog] = useState(false);
 
   const handleClickOpen = () => {
+    if (!user?.uid || (currentPost && currentPost.authorId !== user.uid)) {
+      enqueueSnackbar('削除権限がありません。', { variant: 'error' });
+      return;
+    }
     setOpenDialog(true);
   };
 
@@ -69,10 +82,8 @@ export default function PostDetailsToolbar({
   };
 
   const handleDelete = async () => {
-    // 確認ダイアログを表示するコードは後ほど追加します。
-
     try {
-      const response = await fetch(`http://localhost:8080/delete/${title}`, {
+      const response = await fetch(`http://localhost:8080/delete/${id}`, {
         method: 'DELETE',
       });
 
@@ -87,6 +98,16 @@ export default function PostDetailsToolbar({
     } catch (error) {
       console.error('Failed to delete the post', error);
     }
+  };
+
+  const handleEdit = () => {
+    // ユーザーがログインしているか、またはcurrentPostのauthorIdがuser.uidと一致するかチェック
+    if (!user?.uid || (currentPost && currentPost.authorId !== user.uid)) {
+      enqueueSnackbar('編集権限がありません。', { variant: 'error' });
+      return;
+    }
+    // 編集ページへのリダイレクト
+    router.push(editLink);
   };
 
   return (
@@ -130,7 +151,7 @@ export default function PostDetailsToolbar({
         </Tooltip>
 
         <Tooltip title="編集">
-          <IconButton component={RouterLink} href={editLink}>
+          <IconButton onClick={handleEdit}>
             <Iconify icon="solar:pen-bold" />
           </IconButton>
         </Tooltip>

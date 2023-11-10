@@ -52,6 +52,7 @@ export default function AccountView() {
   const { user } = useContext(AuthContext);
 
   const { user: currentUserProfile } = useGetUser(user?.uid); // ここのエラーが怖い
+  console.log(currentUserProfile);
 
   // const [currentTab, setCurrentTab] = useState('general');
 

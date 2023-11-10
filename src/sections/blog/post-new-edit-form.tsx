@@ -1,23 +1,30 @@
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useMemo, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useContext, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
+import Dialog from '@mui/material/Dialog';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import DialogContentText from '@mui/material/DialogContentText';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
+
+import { AuthContext } from 'src/auth/context/firebase/auth-context';
 
 import { CustomFile } from 'src/components/upload';
 import { useSnackbar } from 'src/components/snackbar';
@@ -34,6 +41,8 @@ type Props = {
 };
 
 export default function PostNewEditForm({ currentPost }: Props) {
+  const { user } = useContext(AuthContext);
+
   const router = useRouter();
 
   const mdUp = useResponsive('up', 'md');
@@ -89,49 +98,66 @@ export default function PostNewEditForm({ currentPost }: Props) {
     }
   }, [currentPost, defaultValues, reset]);
 
-  // const onSubmit = handleSubmit(async (data) => {
-  //   try {
-  //     await new Promise((resolve) => setTimeout(resolve, 500));
-  //     reset();
-  //     preview.onFalse();
-  //     enqueueSnackbar(currentPost ? 'Update success!' : 'Create success!');
-  //     router.push(paths.dashboard.post.root);
-  //     console.info('DATA', data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // });
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleClose = () => {
+    setOpenDialog(false);
+  };
+
+  // ログインページへのリダイレクトを行う関数
+  const redirectToLogin = () => {
+    router.push(paths.auth.firebase.login); // あなたのログインページのパスに置き換えてください
+  };
+
   // const onSubmit = handleSubmit(async (data) => {
   //   try {
   //     const { coverUrl, ...restData } = data; // coverUrlを削除
-  //     const postData = [{ ...restData, author: { ID: 1 } }]; // Post構造体の他のフィールドを設定
-  //     const response = await fetch('http://localhost:8080/create-posts', {
-  //       method: 'POST',
+  //     const postData = { ...restData, author: { ID: 1 } }; // Post構造体の他のフィールドを設定
+  //     const url = currentPost
+  //       ? // ? `http://localhost:8080/edit/${encodeURIComponent(currentPost.title)}` // 更新用URL
+  //         `http://localhost:8080/edit/${currentPost.title}`
+  //       : 'http://localhost:8080/create-post'; // 新規作成用URL
+  //     const method = currentPost ? 'PUT' : 'POST'; // 更新はPUT、新規作成はPOST
+
+  //     const response = await fetch(url, {
+  //       method,
   //       headers: {
   //         'Content-Type': 'application/json',
   //       },
   //       body: JSON.stringify(postData),
   //     });
+
   //     if (!response.ok) {
   //       const errorData = await response.json();
   //       console.error('Error:', errorData.error);
   //       throw new Error(`Network response was not ok ${response.statusText}`);
   //     }
+
   //     reset();
   //     preview.onFalse();
-  //     enqueueSnackbar(currentPost ? 'Update success!' : 'Create success!');
+  //     enqueueSnackbar(currentPost ? '更新しました！' : '投稿しました！');
   //     router.push(paths.dashboard.post.root);
   //   } catch (error) {
   //     console.error(error);
   //   }
   // });
+  // 既存のコードの中のonSubmit関数を以下のコードで置き換えてください
+
   const onSubmit = handleSubmit(async (data) => {
+    // ユーザーがログインしているかチェック
+    if (!user?.uid) {
+      // ユーザーがログインしていなければログインを促すモーダルを表示
+      setOpenDialog(true);
+      return;
+    }
+
     try {
-      const { coverUrl, ...restData } = data; // coverUrlを削除
-      const postData = { ...restData, author: { ID: 1 } }; // Post構造体の他のフィールドを設定
+      const { coverUrl, ...restData } = data; // coverUrlを除外
+      // ここでauthorIdを追加しています
+      const postData = { ...restData, authorId: user.uid };
+
       const url = currentPost
-        ? // ? `http://localhost:8080/edit/${encodeURIComponent(currentPost.title)}` // 更新用URL
-          `http://localhost:8080/edit/${currentPost.title}`
+        ? `http://localhost:8080/edit/${currentPost.ID}` // 更新用URLには投稿のIDを使用
         : 'http://localhost:8080/create-post'; // 新規作成用URL
       const method = currentPost ? 'PUT' : 'POST'; // 更新はPUT、新規作成はPOST
 
@@ -139,22 +165,25 @@ export default function PostNewEditForm({ currentPost }: Props) {
         method,
         headers: {
           'Content-Type': 'application/json',
+          // 必要に応じて認証ヘッダーを追加する
+          // 'Authorization': `Bearer ${user.token}`
         },
         body: JSON.stringify(postData),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Error:', errorData.error);
-        throw new Error(`Network response was not ok ${response.statusText}`);
+        throw new Error(`Network response was not ok: ${errorData.error}`);
       }
 
+      // 投稿が成功したらフォームをリセットし、メッセージを表示
       reset();
       preview.onFalse();
-      enqueueSnackbar(currentPost ? '更新しました！' : '投稿しました！');
+      enqueueSnackbar(currentPost ? '更新しました！' : '投稿しました！', { variant: 'success' });
       router.push(paths.dashboard.post.root);
     } catch (error) {
       console.error(error);
+      enqueueSnackbar('投稿中にエラーが発生しました。', { variant: 'error' });
     }
   });
 
@@ -335,32 +364,59 @@ export default function PostNewEditForm({ currentPost }: Props) {
     </>
   );
 
+  const LoginModal = (
+    <Dialog
+      open={openDialog}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">ログインが必要です</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          投稿を作成するにはログインが必要です。ログインページに移動しますか？
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="info">
+          キャンセル
+        </Button>
+        <Button onClick={redirectToLogin} color="error" autoFocus>
+          ログイン
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
   return (
-    <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Grid container spacing={3}>
-        {renderDetails}
+    <>
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        <Grid container spacing={3}>
+          {renderDetails}
 
-        {renderProperties}
+          {renderProperties}
 
-        {renderActions}
-      </Grid>
+          {renderActions}
+        </Grid>
 
-      <PostDetailsPreview
-        title={values.title}
-        content={values.content}
-        description={values.description}
-        coverUrl={
-          typeof values.coverUrl === 'string'
-            ? values.coverUrl
-            : `${(values.coverUrl as CustomFile)?.preview}`
-        }
-        //
-        open={preview.value}
-        isValid={isValid}
-        isSubmitting={isSubmitting}
-        onClose={preview.onFalse}
-        onSubmit={onSubmit}
-      />
-    </FormProvider>
+        <PostDetailsPreview
+          title={values.title}
+          content={values.content}
+          description={values.description}
+          coverUrl={
+            typeof values.coverUrl === 'string'
+              ? values.coverUrl
+              : `${(values.coverUrl as CustomFile)?.preview}`
+          }
+          //
+          open={preview.value}
+          isValid={isValid}
+          isSubmitting={isSubmitting}
+          onClose={preview.onFalse}
+          onSubmit={onSubmit}
+        />
+      </FormProvider>
+      {LoginModal}
+    </>
   );
 }

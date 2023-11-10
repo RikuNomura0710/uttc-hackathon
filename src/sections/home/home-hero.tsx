@@ -49,7 +49,7 @@ const StyledWrapper = styled('div')(({ theme }) => ({
 
 const StyledTextGradient = styled(m.h1)(({ theme }) => ({
   ...textGradient(
-    `300deg, ${theme.palette.primary.main} 0%, ${theme.palette.warning.main} 25%, ${theme.palette.primary.main} 50%, ${theme.palette.warning.main} 75%, ${theme.palette.primary.main} 100%`
+    `300deg, ${theme.palette.info.main} 0%, ${theme.palette.warning.main} 25%, ${theme.palette.info.main} 50%, ${theme.palette.warning.main} 75%, ${theme.palette.info.main} 100%`
   ),
   padding: 0,
   marginTop: 8,
@@ -217,7 +217,7 @@ export default function HomeHero() {
           sx={{ my: 3 }}
         >
           <Typography variant="body2" sx={{ textAlign: 'center' }}>
-            あなたのその技術をみんなと共有しよう
+            あなたのその技術、みんなと共有しよう
           </Typography>
         </Stack>
       </m.div>
@@ -267,7 +267,7 @@ export default function HomeHero() {
               }}
             >
               <Iconify icon="eva:external-link-fill" width={16} sx={{ mr: 0.5 }} />
-              Get Free Version
+              プライバシーポリシー
             </Link>
           </Stack>
 
@@ -286,7 +286,7 @@ export default function HomeHero() {
         </Stack>
       </m.div>
 
-      <Stack spacing={3} sx={{ textAlign: 'center' }}>
+      {/* <Stack spacing={3} sx={{ textAlign: 'center' }}>
         <m.div variants={varFade().in}>
           <Typography variant="overline" sx={{ opacity: 0.48 }}>
             Available For
@@ -305,7 +305,7 @@ export default function HomeHero() {
             </m.div>
           ))}
         </Stack>
-      </Stack>
+      </Stack> */}
     </Stack>
   );
 

@@ -48,10 +48,9 @@ export default function PostListView() {
   const debouncedQuery = useDebounce(searchQuery);
 
   const { posts, postsLoading } = useGetPosts();
-  console.log(posts);
+  // console.log(posts);
 
   const { searchResults, searchLoading } = useSearchPosts(debouncedQuery);
-
   const dataFiltered = applyFilter({
     inputData: posts,
     filters,

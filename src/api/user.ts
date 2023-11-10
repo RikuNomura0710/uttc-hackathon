@@ -58,7 +58,7 @@ export function useGetUser(id: string) {
           return response.json();
         })
         .then((data) => {
-          setUser(data.post);
+          setUser(data.user);
           setUserLoading(false);
         })
         .catch((error) => {

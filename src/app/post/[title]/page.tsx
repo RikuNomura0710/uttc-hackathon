@@ -1,6 +1,6 @@
 import { paramCase } from 'src/utils/change-case';
 
-import { PostDetailsHomeView } from 'src/sections/blog/view';
+// import { PostDetailsHomeView } from 'src/sections/blog/view';
 
 // ----------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ export const metadata = {
 
 type Props = {
   params: {
-    title: string;
+    id: string;
   };
 };
 
@@ -28,12 +28,14 @@ type Props = {
 //   }));
 // }
 
+// export default function PostDetailsPage() {
+//   const title = 'dummy-title';
+
+//   return <PostDetailsHomeView title={title} />;
+// }
 export default function PostDetailsPage() {
-  const title = 'dummy-title';
-
-  return <PostDetailsHomeView title={title} />;
+  return <div>hello!</div>;
 }
-
 // export async function generateStaticParams() {
 //   const res = await axios.get(endpoints.post.list);
 
@@ -44,9 +46,9 @@ export default function PostDetailsPage() {
 
 export async function generateStaticParams() {
   // ダミーデータを作成します
-  const dummyPosts = [{ title: 'dummy-title-1' }, { title: 'dummy-title-2' }];
+  const dummyPosts = [{ id: '1' }, { id: '2' }];
 
-  return dummyPosts.map((post: { title: string }) => ({
-    title: paramCase(post.title),
+  return dummyPosts.map((post: { id: string }) => ({
+    id: paramCase(post.id),
   }));
 }

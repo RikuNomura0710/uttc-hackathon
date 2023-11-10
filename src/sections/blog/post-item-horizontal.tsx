@@ -1,10 +1,18 @@
+import { useState, useContext } from 'react';
+
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -15,9 +23,12 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { fDate } from 'src/utils/format-time';
 import { fShortenNumber } from 'src/utils/format-number';
 
+import { AuthContext } from 'src/auth/context/firebase/auth-context';
+
 import Label from 'src/components/label';
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
+import { useSnackbar } from 'src/components/snackbar';
 import TextMaxLine from 'src/components/text-max-line';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
@@ -30,13 +41,19 @@ type Props = {
 };
 
 export default function PostItemHorizontal({ post }: Props) {
+  const { user } = useContext(AuthContext);
   const popover = usePopover();
 
   const router = useRouter();
 
   const smUp = useResponsive('up', 'sm');
 
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [openDialog, setOpenDialog] = useState(false);
+
   const {
+    ID,
     title,
     author,
     category,
@@ -47,6 +64,81 @@ export default function PostItemHorizontal({ post }: Props) {
     totalComments,
     description,
   } = post;
+
+  const handleEdit = () => {
+    // ユーザーがログインしているか、またはcurrentPostのauthorIdがuser.uidと一致するかチェック
+    if (post.authorId !== user?.uid) {
+      enqueueSnackbar('削除権限がありません。', { variant: 'error' });
+      return;
+    }
+
+    // 編集ページへのリダイレクト
+    router.push(paths.dashboard.post.edit(ID));
+  };
+
+  const handleClickOpen = () => {
+    if (post.authorId !== user?.uid) {
+      enqueueSnackbar('削除権限がありません。', { variant: 'error' });
+      return;
+    }
+    setOpenDialog(true);
+  };
+
+  const handleClose = () => {
+    setOpenDialog(false);
+  };
+
+  // handleDeleteの中のwindow.confirmの代わりにこれを使用します
+  const handleConfirmDelete = () => {
+    // ここに削除のコードを移動します
+    handleDelete();
+    setOpenDialog(false);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/delete/${ID}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Something went wrong');
+      }
+
+      // 成功した場合
+      enqueueSnackbar('削除しました！');
+      router.push(paths.dashboard.post.root);
+      console.log('Post deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete the post', error);
+    }
+  };
+
+  const LoginModal = (
+    <Dialog
+      open={openDialog}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">この投稿を本当に削除しますか？</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          この投稿は{title}です。削除すると元に戻せません。
+          <br />
+          この投稿を削除してもよろしいですか？
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="info">
+          キャンセル
+        </Button>
+        <Button onClick={handleConfirmDelete} color="error" autoFocus>
+          削除
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
 
   return (
     <>
@@ -75,7 +167,7 @@ export default function PostItemHorizontal({ post }: Props) {
           </Stack>
 
           <Stack spacing={1} flexGrow={1}>
-            <Link color="inherit" component={RouterLink} href={paths.dashboard.post.details(title)}>
+            <Link color="inherit" component={RouterLink} href={paths.dashboard.post.details(ID)}>
               <TextMaxLine variant="subtitle2" line={2}>
                 {title}
               </TextMaxLine>
@@ -149,7 +241,7 @@ export default function PostItemHorizontal({ post }: Props) {
         <MenuItem
           onClick={() => {
             popover.onClose();
-            router.push(paths.dashboard.post.details(title));
+            router.push(paths.dashboard.post.details(ID));
           }}
         >
           <Iconify icon="solar:eye-bold" />
@@ -159,7 +251,7 @@ export default function PostItemHorizontal({ post }: Props) {
         <MenuItem
           onClick={() => {
             popover.onClose();
-            router.push(paths.dashboard.post.edit(title));
+            handleEdit();
           }}
         >
           <Iconify icon="solar:pen-bold" />
@@ -169,6 +261,7 @@ export default function PostItemHorizontal({ post }: Props) {
         <MenuItem
           onClick={() => {
             popover.onClose();
+            handleClickOpen();
           }}
           sx={{ color: 'error.main' }}
         >
@@ -176,6 +269,7 @@ export default function PostItemHorizontal({ post }: Props) {
           削除
         </MenuItem>
       </CustomPopover>
+      {LoginModal}
     </>
   );
 }

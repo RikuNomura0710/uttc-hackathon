@@ -1,4 +1,5 @@
 import { m } from 'framer-motion';
+import { useContext } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -12,14 +13,13 @@ import Typography from '@mui/material/Typography';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-
+import { useGetUser } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
+import { AuthContext } from 'src/auth/context/firebase/auth-context';
 
 import { varHover } from 'src/components/animate';
 import { useSnackbar } from 'src/components/snackbar';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-
 // ----------------------------------------------------------------------
 
 const OPTIONS = [
@@ -42,7 +42,9 @@ const OPTIONS = [
 export default function AccountPopover() {
   const router = useRouter();
 
-  const { user } = useMockedUser(); // ここかえる？
+  const { user } = useContext(AuthContext);
+
+  const { user: currentUserProfile } = useGetUser(user?.uid);
 
   const { logout } = useAuthContext();
 
@@ -80,13 +82,13 @@ export default function AccountPopover() {
           background: (theme) => alpha(theme.palette.grey[500], 0.08),
           ...(popover.open && {
             background: (theme) =>
-              `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
+              `linear-gradient(135deg, ${theme.palette.info.light} 0%, ${theme.palette.info.main} 100%)`,
           }),
         }}
       >
         <Avatar
-          src={user?.photoURL}
-          alt={user?.displayName}
+          src={currentUserProfile?.photoURL || ''}
+          alt={currentUserProfile?.displayName || '名前を登録してください'}
           sx={{
             width: 36,
             height: 36,
