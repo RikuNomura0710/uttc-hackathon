@@ -44,6 +44,7 @@ export default function AccountGeneral({ currentProfile }: Props) {
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('名前は必須です'),
     // photoURL: Yup.mixed<any>().nullable().required('写真は必須です'),
+    photoURL: Yup.mixed<any>().nullable(),
     class: Yup.string().required('クラスは必須です'),
     faculty: Yup.string().required('学部は必須です'),
     department: Yup.string().required('学科は必須です'),
