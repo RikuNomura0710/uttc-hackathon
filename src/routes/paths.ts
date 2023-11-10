@@ -145,11 +145,22 @@ export const paths = {
       new: `${ROOTS.DASHBOARD}/post/new`,
       // details: (title: string) => `${ROOTS.DASHBOARD}/post/${paramCase(title)}`,
       // edit: (title: string) => `${ROOTS.DASHBOARD}/post/${paramCase(title)}/edit`,
-      details: (title: string) => `${ROOTS.DASHBOARD}/post/${title}`,
-      edit: (title: string) => `${ROOTS.DASHBOARD}/post/${title}/edit`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/post/${id}`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/post/${id}/edit`,
       demo: {
         details: `${ROOTS.DASHBOARD}/post/${paramCase(MOCK_TITLE)}`,
         edit: `${ROOTS.DASHBOARD}/post/${paramCase(MOCK_TITLE)}/edit`,
+      },
+    },
+
+    tour: {
+      root: `${ROOTS.DASHBOARD}/tour`,
+      new: `${ROOTS.DASHBOARD}/tour/new`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/tour/${id}`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/tour/${id}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}/edit`,
       },
     },
   },

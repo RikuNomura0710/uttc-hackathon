@@ -15,7 +15,7 @@ export type IUserTableFilters = {
 export type IUserProfileUTTC = {
   id: string;
   displayName: string;
-  photoURL: CustomFile | string | null;
+  photoURL: string | null;
   class: string;
   faculty: string;
   department: string;

@@ -77,14 +77,14 @@ export function useGetPosts() {
 
 //   return memoizedValue;
 // }
-export function useGetPost(title: string) {
+export function useGetPost(id: string) {
   const [post, setPost] = useState<IPostItem | null>(null);
   const [postLoading, setPostLoading] = useState(true);
   const [postError, setPostError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (title) {
-      fetch(`http://localhost:8080/posts/${title}`)
+    if (id) {
+      fetch(`http://localhost:8080/posts/${id}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error(`Network response was not ok ${response.statusText}`);
@@ -102,7 +102,7 @@ export function useGetPost(title: string) {
     } else {
       setPostLoading(false);
     }
-  }, [title]);
+  }, [id]);
 
   return {
     post,

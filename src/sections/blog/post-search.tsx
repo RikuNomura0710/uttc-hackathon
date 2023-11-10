@@ -50,7 +50,7 @@ export default function PostSearch({ query, results, onSearch, hrefItem, loading
       onInputChange={(event, newValue) => onSearch(newValue)}
       getOptionLabel={(option) => option.title}
       noOptionsText={<SearchNotFound query={query} sx={{ bgcolor: 'unset' }} />}
-      isOptionEqualToValue={(option, value) => option.id === value.id}
+      isOptionEqualToValue={(option, value) => option.ID === value.ID}
       slotProps={{
         popper: {
           placement: 'bottom-start',
@@ -92,9 +92,9 @@ export default function PostSearch({ query, results, onSearch, hrefItem, loading
         const parts = parse(post.title, matches);
 
         return (
-          <li {...props} key={post.id}>
+          <li {...props} key={post.ID}>
             <Avatar
-              key={post.id}
+              key={post.ID}
               alt={post.title}
               src={post.coverUrl}
               variant="rounded"

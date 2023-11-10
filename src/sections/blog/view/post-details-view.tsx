@@ -30,14 +30,14 @@ import PostDetailsToolbar from '../post-details-toolbar';
 // ----------------------------------------------------------------------
 
 type Props = {
-  title: string;
+  id: string;
 };
 
-export default function PostDetailsView({ title }: Props) {
+export default function PostDetailsView({ id }: Props) {
   // const [publish, setPublish] = useState('');
   const [category, setCategory] = useState('');
-
-  const { post, postLoading, postError } = useGetPost(title);
+  console.log(id);
+  const { post, postLoading, postError } = useGetPost(id);
 
   const handleChangeCategory = useCallback((newValue: string) => {
     setCategory(newValue);
@@ -74,10 +74,12 @@ export default function PostDetailsView({ title }: Props) {
   const renderPost = post && (
     <>
       <PostDetailsToolbar
+        currentPost={post}
+        id={post.ID}
         title={post.title}
         backLink={paths.dashboard.post.root}
-        editLink={paths.dashboard.post.edit(`${post?.title}`)}
-        liveLink={paths.post.details(`${post?.title}`)}
+        editLink={paths.dashboard.post.edit(`${post?.ID}`)}
+        liveLink={paths.post.details(`${post?.ID}`)}
         category={category || ''}
         onChangeCategory={handleChangeCategory}
         categoryOptions={POST_CATEGORY_OPTIONS}
