@@ -51,7 +51,7 @@ export default function AuthModernLayout({ children, image }: Props) {
       <Box
         component="img"
         alt="auth"
-        src={image || '/assets/background/overlay_3.jpg'}
+        src={image || '/assets/background/uttcback.png'}
         sx={{
           top: 16,
           left: 16,
