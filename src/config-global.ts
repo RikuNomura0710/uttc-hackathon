@@ -36,3 +36,6 @@ export const OPENAI_API = process.env.NEXT_PUBLIC_OPENAI_API;
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = paths.dashboard.post.root; // as '/dashboard'
+
+// ROOT PATH REGISTER
+export const PATH_REGISTER = paths.auth.firebase.register; // as '/dashboard'

@@ -5,11 +5,12 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-import { paths } from 'src/routes/paths';
+// import { paths } from 'src/routes/paths';
 import { useSearchParams } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
 import { EmailInboxIcon } from 'src/assets/icons';
+import { PATH_REGISTER } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 
@@ -44,7 +45,7 @@ export default function FirebaseVerifyView() {
 
       <Button
         component={RouterLink}
-        href={paths.auth.firebase.login}
+        href={PATH_REGISTER}
         size="large"
         color="inherit"
         variant="contained"
