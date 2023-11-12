@@ -72,7 +72,7 @@ export default function HomeAdvertisement() {
               '&:hover': { borderColor: 'currentColor' },
             }}
           >
-            Get Free Version
+            新規登録
           </Button>
         </m.div>
       </Stack>
