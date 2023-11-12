@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useMemo, useState, useEffect, useContext, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
@@ -30,7 +31,12 @@ import { AuthContext } from 'src/auth/context/firebase/auth-context';
 
 import { CustomFile } from 'src/components/upload';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFEditor, RHFUpload, RHFTextField } from 'src/components/hook-form';
+import FormProvider, {
+  RHFEditor,
+  RHFUpload,
+  RHFTextField,
+  RHFAutocomplete,
+} from 'src/components/hook-form';
 
 import { IPostItem } from 'src/types/blog';
 
@@ -52,6 +58,9 @@ export default function PostNewEditForm({ currentPost }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const preview = useBoolean();
+  const techOptions = ['React', 'Vue', 'Angular'];
+  const curriculumOptions = ['Frontend', 'Backend', 'Fullstack'];
+  const categoryOptions = ['Web Development', 'Mobile Development', 'Data Science'];
 
   const NewBlogSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -271,11 +280,91 @@ export default function PostNewEditForm({ currentPost }: Props) {
           <Stack spacing={3} sx={{ p: 3 }}>
             <RHFTextField name="title" label="タイトル" />
 
-            <RHFTextField name="tech" label="タグ" />
+            {/* <RHFTextField name="tech" label="テック" />
 
             <RHFTextField name="curriculum" label="カリキュラム" />
 
-            <RHFTextField name="category" label="カテゴリー" />
+            <RHFTextField name="category" label="カテゴリー" /> */}
+            <RHFAutocomplete
+              name="tech"
+              label="タグ"
+              placeholder="技術を選択"
+              multiple
+              freeSolo
+              options={techOptions}
+              getOptionLabel={(option) => option}
+              renderOption={(props, option) => (
+                <li {...props} key={option}>
+                  {option}
+                </li>
+              )}
+              renderTags={(selected, getTagProps) =>
+                selected.map((option, index) => (
+                  <Chip
+                    {...getTagProps({ index })}
+                    key={option}
+                    label={option}
+                    size="small"
+                    color="info"
+                    variant="soft"
+                  />
+                ))
+              }
+            />
+
+            <RHFAutocomplete
+              name="tech"
+              label="カリキュラム"
+              placeholder="カリキュラムを選択"
+              multiple
+              freeSolo
+              options={curriculumOptions}
+              getOptionLabel={(option) => option}
+              renderOption={(props, option) => (
+                <li {...props} key={option}>
+                  {option}
+                </li>
+              )}
+              renderTags={(selected, getTagProps) =>
+                selected.map((option, index) => (
+                  <Chip
+                    {...getTagProps({ index })}
+                    key={option}
+                    label={option}
+                    size="small"
+                    color="info"
+                    variant="soft"
+                  />
+                ))
+              }
+            />
+
+            <RHFAutocomplete
+              name="category"
+              label="カテゴリー"
+              placeholder="カテゴリーを選択"
+              multiple
+              freeSolo
+              options={categoryOptions}
+              getOptionLabel={(option) => option}
+              renderOption={(props, option) => (
+                <li {...props} key={option}>
+                  {option}
+                </li>
+              )}
+              renderTags={(selected, getTagProps) =>
+                selected.map((option, index) => (
+                  <Chip
+                    {...getTagProps({ index })}
+                    key={option}
+                    label={option}
+                    size="small"
+                    color="info"
+                    variant="soft"
+                  />
+                ))
+              }
+            />
 
             <RHFTextField name="description" label="説明" multiline rows={3} />
 
