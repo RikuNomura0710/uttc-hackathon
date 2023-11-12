@@ -81,7 +81,7 @@ export default function PostNewEditForm({ currentPost }: Props) {
     'ハッカソンの概要',
   ];
 
-  const categoryOptions = ['Web Development', 'Mobile Development', 'Data Science'];
+  const categoryOptions = ['技術ブログ', '技術書', '技術系動画'];
 
   const NewBlogSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),

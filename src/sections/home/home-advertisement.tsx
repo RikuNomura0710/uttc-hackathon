@@ -7,7 +7,7 @@ import { useTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 
 import { bgGradient } from 'src/theme/css';
-import { PATH_AFTER_LOGIN } from 'src/config-global';
+import { PATH_REGISTER, PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import { varFade, MotionViewport } from 'src/components/animate';
@@ -66,7 +66,7 @@ export default function HomeAdvertisement() {
             variant="outlined"
             target="_blank"
             rel="noopener"
-            href={PATH_AFTER_LOGIN}
+            href={PATH_REGISTER}
             endIcon={<Iconify icon="eva:external-link-fill" width={16} sx={{ mr: 0.5 }} />}
             sx={{
               color: 'common.white',

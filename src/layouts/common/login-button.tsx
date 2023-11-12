@@ -3,7 +3,7 @@ import { Theme, SxProps } from '@mui/material/styles';
 
 import { RouterLink } from 'src/routes/components';
 
-import { PATH_AFTER_LOGIN } from 'src/config-global';
+import { PATH_REGISTER, PATH_AFTER_LOGIN } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ export function ContainLoginButton({ sx }: Props) {
 
 export function ContainSignUpButton({ sx }: Props) {
   return (
-    <Button component={RouterLink} href={PATH_AFTER_LOGIN} variant="contained" sx={{ ...sx }}>
+    <Button component={RouterLink} href={PATH_REGISTER} variant="contained" sx={{ ...sx }}>
       新規登録
     </Button>
   );
