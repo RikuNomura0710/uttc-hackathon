@@ -28,10 +28,6 @@ export default function PostEditView({ id }: Props) {
         heading="編集"
         links={[
           {
-            name: 'UTTC',
-            href: paths.dashboard.root,
-          },
-          {
             name: 'コンテンツ',
             href: paths.dashboard.post.root,
           },
