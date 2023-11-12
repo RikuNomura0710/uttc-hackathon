@@ -6,9 +6,8 @@ import Button from '@mui/material/Button';
 import { useTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 
-import { paths } from 'src/routes/paths';
-
 import { bgGradient } from 'src/theme/css';
+import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import { varFade, MotionViewport } from 'src/components/animate';
@@ -25,12 +24,13 @@ export default function HomeAdvertisement() {
           xs: 'center',
           md: 'left',
         },
+        pt: 5,
       }}
     >
       <Box
         component={m.div}
         variants={varFade().inDown}
-        sx={{ color: 'common.white', mb: 5, typography: 'h2' }}
+        sx={{ color: 'common.white', mb: 3, typography: 'h2' }}
       >
         UTTC技術ブログ
         <br /> を始めよう
@@ -40,6 +40,7 @@ export default function HomeAdvertisement() {
         direction={{ xs: 'column', md: 'row' }}
         justifyContent={{ xs: 'center', md: 'flex-start' }}
         spacing={2}
+        sx={{ pb: 3 }}
       >
         <m.div variants={varFade().inRight}>
           <Button
@@ -48,7 +49,7 @@ export default function HomeAdvertisement() {
             variant="contained"
             target="_blank"
             rel="noopener"
-            href={paths.minimalUI} // ここを変える
+            href={PATH_AFTER_LOGIN} // ここを変える
             sx={{
               color: 'grey.800',
               bgcolor: 'common.white',
@@ -65,7 +66,7 @@ export default function HomeAdvertisement() {
             variant="outlined"
             target="_blank"
             rel="noopener"
-            href={paths.freeUI}
+            href={PATH_AFTER_LOGIN}
             endIcon={<Iconify icon="eva:external-link-fill" width={16} sx={{ mr: 0.5 }} />}
             sx={{
               color: 'common.white',
@@ -88,8 +89,8 @@ export default function HomeAdvertisement() {
         }}
         transition={{ duration: 4, repeat: Infinity }}
         alt="rocket"
-        src="/assets/images/home/rocket.webp"
-        sx={{ maxWidth: 460 }}
+        src="/assets/images/home/lets.png"
+        sx={{ maxWidth: 200, pt: 10, pb: 5, mr: { xs: 0, md: 5 } }}
       />
     </Stack>
   );
@@ -98,6 +99,7 @@ export default function HomeAdvertisement() {
     <Container component={MotionViewport}>
       <Stack
         alignItems="center"
+        justifyContent="center"
         direction={{ xs: 'column', md: 'row' }}
         sx={{
           ...bgGradient({
@@ -106,7 +108,7 @@ export default function HomeAdvertisement() {
             endColor: theme.palette.info.dark,
           }),
           borderRadius: 2,
-          pb: { xs: 5, md: 0 },
+          pb: { xs: 5, md: 5 },
         }}
       >
         {renderImg}
