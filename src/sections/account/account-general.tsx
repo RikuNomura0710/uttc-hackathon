@@ -86,7 +86,7 @@ export default function AccountGeneral({ currentProfile }: Props) {
   } = methods;
 
   useEffect(() => {
-    console.log(currentProfile);
+    // console.log(currentProfile);
     if (currentProfile) {
       reset(defaultValues);
     }
@@ -119,14 +119,14 @@ export default function AccountGeneral({ currentProfile }: Props) {
       enqueueSnackbar('削除しました！');
       reset(defaultValues);
       // router.push(paths.dashboard.post.root);
-      console.log('Post deleted successfully');
+      // console.log('Post deleted successfully');
     } catch (error) {
       console.error('Failed to delete the post', error);
     }
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
+    // console.log(data);
     const postData = { ...data, id: user?.uid };
     try {
       const url = currentProfile
@@ -163,7 +163,7 @@ export default function AccountGeneral({ currentProfile }: Props) {
       const storageRef = ref(storage, `pforile_images/${file.name}`);
 
       uploadBytes(storageRef, file).then((snapshot) => {
-        console.log('Uploaded a blob or file!', snapshot);
+        // console.log('Uploaded a blob or file!', snapshot);
         getDownloadURL(snapshot.ref).then((url) => {
           setValue('photoURL', url, { shouldValidate: true });
         });

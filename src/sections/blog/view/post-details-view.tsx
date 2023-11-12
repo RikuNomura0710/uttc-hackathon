@@ -36,7 +36,7 @@ type Props = {
 export default function PostDetailsView({ id }: Props) {
   // const [publish, setPublish] = useState('');
   const [category, setCategory] = useState('');
-  console.log(id);
+  // console.log(id);
   const { post, postLoading, postError } = useGetPost(id);
 
   const handleChangeCategory = useCallback((newValue: string) => {

@@ -16,7 +16,7 @@ type Props = {
 
 export default function PostDetailsPage({ params }: Props) {
   const { id } = params;
-  console.log('id:', id);
+  // console.log('id:', id);
 
   return <PostDetailsView id={id} />;
 }
@@ -30,7 +30,7 @@ export async function generateStaticParams() {
     }
 
     const data = await response.json();
-    console.log('data.id:', data.id);
+    // console.log('data.id:', data.id);
     return data.posts.map((post: { id: string }) => ({
       id: post.id,
     }));
