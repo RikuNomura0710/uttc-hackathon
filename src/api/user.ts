@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 
+import { HOST_API } from 'src/config-global';
+
 import { IUserProfileUTTC } from 'src/types/user';
 
 // ----------------------------------------------------------------------
@@ -50,7 +52,7 @@ export function useGetUser(id: string) {
 
   useEffect(() => {
     if (id) {
-      fetch(`http://localhost:8080/user/${id}`)
+      fetch(`${HOST_API}/user/${id}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error(`Network response was not ok ${response.statusText}`);

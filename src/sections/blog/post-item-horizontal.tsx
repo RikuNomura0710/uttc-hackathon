@@ -23,6 +23,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { fDate } from 'src/utils/format-time';
 import { fShortenNumber } from 'src/utils/format-number';
 
+import { HOST_API } from 'src/config-global';
 import { AuthContext } from 'src/auth/context/firebase/auth-context';
 
 import Label from 'src/components/label';
@@ -58,7 +59,8 @@ export default function PostItemHorizontal({ post }: Props) {
     author,
     category,
     coverUrl,
-    createdAt,
+    CreatedAt,
+    UpdatedAt,
     totalViews,
     totalShares,
     totalComments,
@@ -97,7 +99,7 @@ export default function PostItemHorizontal({ post }: Props) {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/delete/${ID}`, {
+      const response = await fetch(`${HOST_API}/delete/${ID}`, {
         method: 'DELETE',
       });
 
@@ -162,7 +164,7 @@ export default function PostItemHorizontal({ post }: Props) {
             </Label>
 
             <Box component="span" sx={{ typography: 'caption', color: 'text.disabled' }}>
-              {fDate(createdAt)}
+              {fDate(CreatedAt)}
             </Box>
           </Stack>
 

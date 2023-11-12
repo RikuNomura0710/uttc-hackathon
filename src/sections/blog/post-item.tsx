@@ -35,7 +35,7 @@ export default function PostItem({ post, index }: Props) {
 
   const mdUp = useResponsive('up', 'md');
 
-  const { coverUrl, title, totalViews, totalComments, totalShares, author, createdAt } = post;
+  const { coverUrl, title, totalViews, totalComments, totalShares, author, CreatedAt } = post;
 
   const latestPost = index === 0 || index === 1 || index === 2;
 
@@ -55,7 +55,7 @@ export default function PostItem({ post, index }: Props) {
 
         <PostContent
           title={title}
-          createdAt={createdAt}
+          createdAt={CreatedAt}
           totalViews={totalViews}
           totalShares={totalShares}
           totalComments={totalComments}
@@ -108,7 +108,7 @@ export default function PostItem({ post, index }: Props) {
         totalViews={totalViews}
         totalComments={totalComments}
         totalShares={totalShares}
-        createdAt={createdAt}
+        createdAt={CreatedAt}
       />
     </Card>
   );

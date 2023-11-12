@@ -1,6 +1,7 @@
 'use client';
 
 import orderBy from 'lodash/orderBy';
+// import orderBy from 'lodash/orderBy';
 import { useState, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
@@ -14,13 +15,15 @@ import { RouterLink } from 'src/routes/components';
 
 import { useDebounce } from 'src/hooks/use-debounce';
 
-import { POST_SORT_OPTIONS } from 'src/_mock';
 import { useGetPosts, useSearchPosts } from 'src/api/blog';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import InvoiceTableToolbar from 'src/sections/invoice/invoice-table-toolbar';
+import InvoiceTableFiltersResult from 'src/sections/invoice/invoice-table-filters-result';
 
 import { IPostItem, IPostFilters, IPostFilterValue } from 'src/types/blog';
 
@@ -32,6 +35,8 @@ import PostListHorizontal from '../post-list-horizontal';
 
 const defaultFilters: IPostFilters = {
   category: 'all',
+  tech: [],
+  curriculum: '',
 };
 
 // ----------------------------------------------------------------------
@@ -48,6 +53,9 @@ export default function PostListView() {
   const debouncedQuery = useDebounce(searchQuery);
 
   const { posts, postsLoading } = useGetPosts();
+
+  const techOptions = ['React', 'Node.js', 'Python'];
+  const curriculumOptions = ['Frontend', 'Backend', 'Fullstack'];
   // console.log(posts);
 
   const { searchResults, searchLoading } = useSearchPosts(debouncedQuery);
@@ -56,6 +64,14 @@ export default function PostListView() {
     filters,
     sortBy,
   });
+
+  const POST_SORT_OPTIONS = [
+    { value: 'latest', label: '作成日の新しい順' },
+    { value: 'oldest', label: '作成日の古い順' },
+    { value: 'updatedNewest', label: '更新日の新しい順' },
+    { value: 'updatedOldest', label: '更新日の古い順' },
+    // ...他の並び替えオプション
+  ];
 
   const handleSortBy = useCallback((newValue: string) => {
     setSortBy(newValue);
@@ -78,6 +94,11 @@ export default function PostListView() {
     },
     [handleFilters]
   );
+  const canReset = !!filters.curriculum || !!filters.tech.length || filters.category !== 'all';
+
+  const handleResetFilters = useCallback(() => {
+    setFilters(defaultFilters);
+  }, []);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -125,19 +146,13 @@ export default function PostListView() {
           results={searchResults}
           onSearch={handleSearch}
           loading={searchLoading}
-          hrefItem={(title: string) => paths.dashboard.post.details(title)}
+          hrefItem={(ID: string) => paths.dashboard.post.details(ID)}
         />
 
         <PostSort sort={sortBy} onSort={handleSortBy} sortOptions={POST_SORT_OPTIONS} />
       </Stack>
 
-      <Tabs
-        value={filters.category}
-        onChange={handleFilterCategory}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      >
+      <Tabs value={filters.category} onChange={handleFilterCategory}>
         {['all', '技術ブログ', '技術書', '技術系動画'].map((tab) => (
           <Tab
             key={tab}
@@ -169,6 +184,24 @@ export default function PostListView() {
           />
         ))}
       </Tabs>
+      <InvoiceTableToolbar
+        filters={filters}
+        onFilters={handleFilters}
+        techOptions={techOptions}
+        curriculumOptions={curriculumOptions}
+      />
+
+      {canReset && (
+        <InvoiceTableFiltersResult
+          filters={filters}
+          onFilters={handleFilters}
+          // //
+          onResetFilters={handleResetFilters}
+          // //
+          results={dataFiltered.length}
+          sx={{ p: 2.5, pt: 0 }}
+        />
+      )}
 
       <PostListHorizontal posts={dataFiltered} loading={postsLoading} />
     </Container>
@@ -176,6 +209,36 @@ export default function PostListView() {
 }
 
 // ----------------------------------------------------------------------
+
+// const applyFilter = ({
+//   inputData,
+//   filters,
+//   sortBy,
+// }: {
+//   inputData: IPostItem[];
+//   filters: IPostFilters;
+//   sortBy: string;
+// }) => {
+//   const { category, } = filters;
+
+//   if (sortBy === 'latest') {
+//     inputData = orderBy(inputData, ['createdAt'], ['desc']);
+//   }
+
+//   if (sortBy === 'oldest') {
+//     inputData = orderBy(inputData, ['createdAt'], ['asc']);
+//   }
+
+//   if (sortBy === 'popular') {
+//     inputData = orderBy(inputData, ['totalViews'], ['desc']);
+//   }
+
+//   if (category !== 'all') {
+//     inputData = inputData.filter((post) => post.category === category);
+//   }
+
+//   return inputData;
+// };
 
 const applyFilter = ({
   inputData,
@@ -186,22 +249,38 @@ const applyFilter = ({
   filters: IPostFilters;
   sortBy: string;
 }) => {
-  const { category } = filters;
-
-  if (sortBy === 'latest') {
-    inputData = orderBy(inputData, ['createdAt'], ['desc']);
-  }
-
-  if (sortBy === 'oldest') {
-    inputData = orderBy(inputData, ['createdAt'], ['asc']);
-  }
-
-  if (sortBy === 'popular') {
-    inputData = orderBy(inputData, ['totalViews'], ['desc']);
+  const { category, tech, curriculum } = filters;
+  switch (sortBy) {
+    case 'latest':
+      inputData = orderBy(inputData, ['CreatedAt'], ['desc']);
+      break;
+    case 'oldest':
+      inputData = orderBy(inputData, ['CreatedAt'], ['asc']);
+      break;
+    case 'updatedNewest':
+      inputData = orderBy(inputData, ['UpdatedAt'], ['desc']);
+      break;
+    case 'updatedOldest':
+      inputData = orderBy(inputData, ['UpdatedAt'], ['asc']);
+      break;
+    default:
+      // どのケースにも一致しない場合の処理
+      // ここでは何もしない、または特定の処理を行う
+      break;
   }
 
   if (category !== 'all') {
     inputData = inputData.filter((post) => post.category === category);
+  }
+
+  if (tech.length) {
+    // post.tech が単一の文字列であると仮定
+    inputData = inputData.filter((post) => tech.includes(post.tech));
+  }
+
+  // Curriculum フィルタリング
+  if (curriculum) {
+    inputData = inputData.filter((post) => post.curriculum === curriculum);
   }
 
   return inputData;

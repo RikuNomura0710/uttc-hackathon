@@ -144,10 +144,7 @@ export default function NotificationItem({ notification }: NotificationItemProps
         bgcolor: 'background.neutral',
       }}
     >
-      <FileThumbnail
-        file="http://localhost:8080/httpsdesign-suriname-2015.mp3"
-        sx={{ width: 40, height: 40 }}
-      />
+      <FileThumbnail file="HOST_API/httpsdesign-suriname-2015.mp3" sx={{ width: 40, height: 40 }} />
 
       <Stack spacing={1} direction={{ xs: 'column', sm: 'row' }} flexGrow={1} sx={{ minWidth: 0 }}>
         <ListItemText

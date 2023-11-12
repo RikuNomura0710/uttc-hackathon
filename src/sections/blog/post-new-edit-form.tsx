@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import OpenAI from 'openai';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMemo, useState, useEffect, useContext, useCallback } from 'react';
@@ -24,6 +25,7 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import { HOST_API, OPENAI_API } from 'src/config-global';
 import { AuthContext } from 'src/auth/context/firebase/auth-context';
 
 import { CustomFile } from 'src/components/upload';
@@ -53,6 +55,8 @@ export default function PostNewEditForm({ currentPost }: Props) {
 
   const NewBlogSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
+    tech: Yup.string().required('Tech is required'), // tech を追加
+    curriculum: Yup.string().required('Curriculum is required'), // curriculum を追加
     description: Yup.string().required('Description is required'),
     content: Yup.string().required('Content is required'),
     coverUrl: Yup.mixed<any>().nullable().required('Cover is required'),
@@ -66,6 +70,8 @@ export default function PostNewEditForm({ currentPost }: Props) {
   const defaultValues = useMemo(
     () => ({
       title: currentPost?.title || '',
+      tech: currentPost?.tech || '',
+      curriculum: currentPost?.curriculum || '',
       description: currentPost?.description || '',
       content: currentPost?.content || '',
       coverUrl: currentPost?.coverUrl || null,
@@ -109,40 +115,6 @@ export default function PostNewEditForm({ currentPost }: Props) {
     router.push(paths.auth.firebase.login); // あなたのログインページのパスに置き換えてください
   };
 
-  // const onSubmit = handleSubmit(async (data) => {
-  //   try {
-  //     const { coverUrl, ...restData } = data; // coverUrlを削除
-  //     const postData = { ...restData, author: { ID: 1 } }; // Post構造体の他のフィールドを設定
-  //     const url = currentPost
-  //       ? // ? `http://localhost:8080/edit/${encodeURIComponent(currentPost.title)}` // 更新用URL
-  //         `http://localhost:8080/edit/${currentPost.title}`
-  //       : 'http://localhost:8080/create-post'; // 新規作成用URL
-  //     const method = currentPost ? 'PUT' : 'POST'; // 更新はPUT、新規作成はPOST
-
-  //     const response = await fetch(url, {
-  //       method,
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(postData),
-  //     });
-
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       console.error('Error:', errorData.error);
-  //       throw new Error(`Network response was not ok ${response.statusText}`);
-  //     }
-
-  //     reset();
-  //     preview.onFalse();
-  //     enqueueSnackbar(currentPost ? '更新しました！' : '投稿しました！');
-  //     router.push(paths.dashboard.post.root);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // });
-  // 既存のコードの中のonSubmit関数を以下のコードで置き換えてください
-
   const onSubmit = handleSubmit(async (data) => {
     // ユーザーがログインしているかチェック
     if (!user?.uid) {
@@ -157,8 +129,8 @@ export default function PostNewEditForm({ currentPost }: Props) {
       const postData = { ...restData, authorId: user.uid };
 
       const url = currentPost
-        ? `http://localhost:8080/edit/${currentPost.ID}` // 更新用URLには投稿のIDを使用
-        : 'http://localhost:8080/create-post'; // 新規作成用URL
+        ? `${HOST_API}/edit/${currentPost.ID}` // 更新用URLには投稿のIDを使用
+        : `${HOST_API}/create-post`; // 新規作成用URL
       const method = currentPost ? 'PUT' : 'POST'; // 更新はPUT、新規作成はPOST
 
       const response = await fetch(url, {
@@ -206,6 +178,79 @@ export default function PostNewEditForm({ currentPost }: Props) {
     setValue('coverUrl', null);
   }, [setValue]);
 
+  // ----------------------------------------------------------------------
+
+  const openAi = new OpenAI({
+    apiKey: OPENAI_API,
+    dangerouslyAllowBrowser: true,
+  });
+
+  const summarizeText = async (text: string): Promise<string | null> => {
+    if (!text) {
+      enqueueSnackbar('内容が書かれていません', { variant: 'error' });
+      return '';
+    }
+
+    try {
+      const completion = await openAi.chat.completions.create({
+        model: 'gpt-3.5-turbo-1106', // 使用するモデル
+        messages: [
+          {
+            role: 'system',
+            content: '要約してください。',
+          },
+          {
+            role: 'user',
+            content: text,
+          },
+        ],
+      });
+
+      return completion.choices[0].message.content;
+    } catch (error) {
+      console.error('要約中にエラーが発生しました: ', error);
+      enqueueSnackbar('要約中にエラーが発生しました。', { variant: 'error' });
+      throw error;
+    }
+  };
+
+  const handleSummarize = async () => {
+    const content = watch('content'); // 'content'は要約するテキストフィールドの名前
+    const summary = await summarizeText(content);
+    if (summary) {
+      setValue('description', summary); // 要約を説明フィールドに設定
+    }
+  };
+
+  const generateImage = async () => {
+    try {
+      const prompt = watch('description');
+      if (!prompt) {
+        enqueueSnackbar('説明が必要です', { variant: 'error' });
+        return;
+      }
+
+      const response = await openAi.images.generate({
+        model: 'dall-e-3',
+        prompt,
+        size: '1024x1024',
+        quality: 'standard',
+        n: 1,
+      });
+
+      if (response.data && response.data.length > 0) {
+        setValue('coverUrl', response.data[0].url);
+      } else {
+        enqueueSnackbar('画像を生成できませんでした', { variant: 'error' });
+      }
+    } catch (error) {
+      console.error('画像生成中にエラーが発生しました: ', error);
+      enqueueSnackbar('画像生成中にエラーが発生しました', { variant: 'error' });
+    }
+  };
+
+  // ----------------------------------------------------------------------
+
   const renderDetails = (
     <>
       {mdUp && (
@@ -226,9 +271,22 @@ export default function PostNewEditForm({ currentPost }: Props) {
           <Stack spacing={3} sx={{ p: 3 }}>
             <RHFTextField name="title" label="タイトル" />
 
+            <RHFTextField name="tech" label="タグ" />
+
+            <RHFTextField name="curriculum" label="カリキュラム" />
+
             <RHFTextField name="category" label="カテゴリー" />
 
             <RHFTextField name="description" label="説明" multiline rows={3} />
+
+            <Button
+              variant="contained"
+              color="info"
+              onClick={handleSummarize}
+              disabled={isSubmitting}
+            >
+              要約する
+            </Button>
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">内容</Typography>
@@ -243,6 +301,9 @@ export default function PostNewEditForm({ currentPost }: Props) {
                 onDrop={handleDrop}
                 onDelete={handleRemoveFile}
               />
+              <Button variant="contained" color="info" onClick={generateImage}>
+                画像生成
+              </Button>
             </Stack>
           </Stack>
         </Card>

@@ -3,6 +3,8 @@ import { useMemo, useState, useEffect } from 'react';
 
 import { fetcher, endpoints } from 'src/utils/axios';
 
+import { HOST_API } from 'src/config-global';
+
 import { IPostItem } from 'src/types/blog';
 
 // ----------------------------------------------------------------------
@@ -33,7 +35,7 @@ export function useGetPosts() {
   const [postsError, setPostsError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:8080/posts')
+    fetch(`${HOST_API}/posts`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Network response was not ok ${response.statusText}`);
@@ -84,7 +86,7 @@ export function useGetPost(id: string) {
 
   useEffect(() => {
     if (id) {
-      fetch(`http://localhost:8080/posts/${id}`)
+      fetch(`${HOST_API}/posts/${id}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error(`Network response was not ok ${response.statusText}`);
@@ -136,22 +138,40 @@ export function useGetLatestPosts(title: string) {
 // ----------------------------------------------------------------------
 
 export function useSearchPosts(query: string) {
-  const URL = query ? [endpoints.post.search, { params: { query } }] : '';
+  const [searchResults, setSearchResults] = useState<IPostItem[]>([]);
+  const [searchLoading, setSearchLoading] = useState<boolean>(false);
+  const [searchError, setSearchError] = useState<Error | null>(null);
 
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, {
-    keepPreviousData: true,
-  });
+  useEffect(() => {
+    if (!query) {
+      // クエリが空の場合は検索を実行しない
+      setSearchResults([]);
+      setSearchLoading(false);
+      return;
+    }
 
-  const memoizedValue = useMemo(
-    () => ({
-      searchResults: (data?.results as IPostItem[]) || [],
-      searchLoading: isLoading,
-      searchError: error,
-      searchValidating: isValidating,
-      searchEmpty: !isLoading && !data?.results.length,
-    }),
-    [data?.results, error, isLoading, isValidating]
-  );
+    setSearchLoading(true);
+    fetch(`${HOST_API}/search?query=${encodeURIComponent(query)}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Network response was not ok ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setSearchResults(data.results);
+        setSearchLoading(false);
+      })
+      .catch((error) => {
+        setSearchError(error);
+        setSearchLoading(false);
+      });
+  }, [query]);
 
-  return memoizedValue;
+  return {
+    searchResults,
+    searchLoading,
+    searchError,
+    searchEmpty: searchResults.length === 0,
+  };
 }

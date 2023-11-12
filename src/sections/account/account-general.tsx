@@ -17,6 +17,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 
+import { HOST_API } from 'src/config-global';
+
 // import { useRouter } from 'src/routes/hooks';
 
 import { fData } from 'src/utils/format-number';
@@ -105,7 +107,7 @@ export default function AccountGeneral({ currentProfile }: Props) {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/delete-user/${user?.uid}`, {
+      const response = await fetch(`${HOST_API}/delete-user/${user?.uid}`, {
         method: 'DELETE',
       });
 
@@ -128,9 +130,9 @@ export default function AccountGeneral({ currentProfile }: Props) {
     const postData = { ...data, id: user?.uid };
     try {
       const url = currentProfile
-        ? // ? `http://localhost:8080/edit/${encodeURIComponent(currentProfile.title)}` // 更新用URL
-          `http://localhost:8080/update-user/${currentProfile.id}`
-        : 'http://localhost:8080/create-user'; // 新規作成用URL
+        ? // ? `HOST_API/edit/${encodeURIComponent(currentProfile.title)}` // 更新用URL
+          `${HOST_API}//update-user/${currentProfile.id}`
+        : `${HOST_API}//create-user`; // 新規作成用URL
       const method = currentProfile ? 'PUT' : 'POST'; // 更新はPUT、新規作成はPOST
 
       const response = await fetch(url, {

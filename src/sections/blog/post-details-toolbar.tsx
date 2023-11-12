@@ -17,6 +17,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
+import { HOST_API } from 'src/config-global';
 import { AuthContext } from 'src/auth/context/firebase/auth-context';
 
 import Iconify from 'src/components/iconify';
@@ -83,7 +84,7 @@ export default function PostDetailsToolbar({
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/delete/${id}`, {
+      const response = await fetch(`${HOST_API}/delete/${id}`, {
         method: 'DELETE',
       });
 
