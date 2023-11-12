@@ -55,7 +55,29 @@ export default function PostListView() {
   const { posts, postsLoading } = useGetPosts();
 
   const techOptions = ['React', 'Node.js', 'Python'];
-  const curriculumOptions = ['Frontend', 'Backend', 'Fullstack'];
+  const curriculumOptions = [
+    'エディタ(IDE)',
+    'OSコマンド(とシェル)',
+    'Git',
+    'GitHub',
+    'HTML&CSS',
+    'JavaScript',
+    'React',
+    'React×TypeScript',
+    'SQL',
+    'Docker',
+    'Go',
+    'HTTP Server(Go)',
+    'RDBMS(MySQL)へ接続(Go)',
+    'Unit Test(Go)',
+    'フロントエンドとバックエンドの接続',
+    'CI(Continuous Integration)',
+    'CD(Continuous Delivery/Deployment)',
+    '認証',
+    'ハッカソン準備',
+    'ハッカソンの概要',
+  ];
+
   // console.log(posts);
 
   const { searchResults, searchLoading } = useSearchPosts(debouncedQuery);

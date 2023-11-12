@@ -58,7 +58,29 @@ export default function PostNewEditForm({ currentPost }: Props) {
 
   const preview = useBoolean();
   const techOptions = ['React', 'Vue', 'Angular'];
-  const curriculumOptions = ['Frontend', 'Backend', 'Fullstack'];
+  const curriculumOptions = [
+    'エディタ(IDE)',
+    'OSコマンド(とシェル)',
+    'Git',
+    'GitHub',
+    'HTML&CSS',
+    'JavaScript',
+    'React',
+    'React×TypeScript',
+    'SQL',
+    'Docker',
+    'Go',
+    'HTTP Server(Go)',
+    'RDBMS(MySQL)へ接続(Go)',
+    'Unit Test(Go)',
+    'フロントエンドとバックエンドの接続',
+    'CI(Continuous Integration)',
+    'CD(Continuous Delivery/Deployment)',
+    '認証',
+    'ハッカソン準備',
+    'ハッカソンの概要',
+  ];
+
   const categoryOptions = ['Web Development', 'Mobile Development', 'Data Science'];
 
   const NewBlogSchema = Yup.object().shape({
