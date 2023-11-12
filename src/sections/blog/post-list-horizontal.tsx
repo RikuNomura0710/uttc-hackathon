@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import Box from '@mui/material/Box';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 
@@ -14,18 +16,31 @@ type Props = {
 };
 
 export default function PostListHorizontal({ posts, loading }: Props) {
-  const renderSkeleton = (
+  const [page, setPage] = useState(1);
+  const postsPerPage = 8;
+
+  const handleChangePage = (event: React.ChangeEvent<unknown>, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const start = (page - 1) * postsPerPage;
+  const end = start + postsPerPage;
+  const currentPosts = posts.slice(start, end);
+
+  const renderList = (
     <>
-      {[...Array(16)].map((_, index) => (
-        <PostItemSkeleton key={index} variant="horizontal" />
+      {currentPosts.map((post) => (
+        <PostItemHorizontal key={post.ID} post={post} />
       ))}
     </>
   );
 
-  const renderList = (
+  // ページネーションの合計ページ数を計算
+  const pageCount = Math.ceil(posts.length / postsPerPage);
+  const renderSkeleton = (
     <>
-      {posts.map((post) => (
-        <PostItemHorizontal key={post.ID} post={post} />
+      {[...Array(16)].map((_, index) => (
+        <PostItemSkeleton key={index} variant="horizontal" />
       ))}
     </>
   );
@@ -43,9 +58,11 @@ export default function PostListHorizontal({ posts, loading }: Props) {
         {loading ? renderSkeleton : renderList}
       </Box>
 
-      {posts.length > 8 && (
+      {pageCount > 1 && (
         <Pagination
-          count={8}
+          count={pageCount}
+          page={page}
+          onChange={handleChangePage}
           sx={{
             mt: 8,
             [`& .${paginationClasses.ul}`]: {
