@@ -11,10 +11,26 @@ type Props = {
   sx?: SxProps<Theme>;
 };
 
-export default function LoginButton({ sx }: Props) {
+export function LoginButton({ sx }: Props) {
   return (
     <Button component={RouterLink} href={PATH_AFTER_LOGIN} variant="outlined" sx={{ mr: 1, ...sx }}>
       ログイン
+    </Button>
+  );
+}
+
+export function ContainLoginButton({ sx }: Props) {
+  return (
+    <Button component={RouterLink} href={PATH_AFTER_LOGIN} variant="contained" sx={{ ...sx }}>
+      ログイン
+    </Button>
+  );
+}
+
+export function ContainSignUpButton({ sx }: Props) {
+  return (
+    <Button component={RouterLink} href={PATH_AFTER_LOGIN} variant="contained" sx={{ ...sx }}>
+      新規登録
     </Button>
   );
 }

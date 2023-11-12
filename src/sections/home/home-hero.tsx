@@ -10,12 +10,12 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import { alpha, styled, useTheme } from '@mui/material/styles';
 
-import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { HEADER } from 'src/layouts/config-layout';
+import { PATH_AFTER_LOGIN } from 'src/config-global';
 import { bgBlur, bgGradient, textGradient } from 'src/theme/css';
 
 import Iconify from 'src/components/iconify';
@@ -204,7 +204,7 @@ export default function HomeHero() {
             repeat: Infinity,
           }}
         >
-          UTTC
+          UTokyo Tech Club
         </StyledTextGradient>
       </m.div>
 
@@ -245,7 +245,7 @@ export default function HomeHero() {
           <Stack alignItems="center" spacing={2}>
             <Button
               component={RouterLink}
-              href={paths.dashboard.root}
+              href={PATH_AFTER_LOGIN}
               color="inherit"
               size="large"
               variant="contained"
@@ -259,7 +259,7 @@ export default function HomeHero() {
               variant="caption"
               target="_blank"
               rel="noopener"
-              href={paths.freeUI}
+              href="https://policies.google.com/privacy?hl=ja"
               sx={{
                 textDecoration: 'underline',
                 display: 'inline-flex',
@@ -278,7 +278,7 @@ export default function HomeHero() {
             startIcon={<Iconify icon="eva:external-link-fill" width={24} />} // ここを変える
             target="_blank"
             rel="noopener"
-            href={paths.figma}
+            href={PATH_AFTER_LOGIN}
             sx={{ borderColor: 'text.primary' }}
           >
             登録する
