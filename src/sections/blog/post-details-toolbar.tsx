@@ -95,7 +95,7 @@ export default function PostDetailsToolbar({
       // 成功した場合
       enqueueSnackbar('削除しました！');
       router.push(paths.dashboard.post.root);
-      console.log('Post deleted successfully');
+      // console.log('Post deleted successfully');
     } catch (error) {
       console.error('Failed to delete the post', error);
     }

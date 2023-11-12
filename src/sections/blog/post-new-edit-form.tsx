@@ -47,6 +47,15 @@ type Props = {
   currentPost?: IPostItem | null;
 };
 
+type PostData = {
+  title: string;
+  description: string;
+  category: string;
+  curriculum: string;
+  tech: string;
+  coverUrl?: string;
+};
+
 export default function PostNewEditForm({ currentPost }: Props) {
   const { user } = useContext(AuthContext);
 
@@ -84,12 +93,12 @@ export default function PostNewEditForm({ currentPost }: Props) {
   const categoryOptions = ['技術ブログ', '技術書', '技術系動画'];
 
   const NewBlogSchema = Yup.object().shape({
-    title: Yup.string().required('Title is required'),
-    tech: Yup.string().required('Tech is required'), // tech を追加
-    curriculum: Yup.string().required('Curriculum is required'), // curriculum を追加
-    category: Yup.string().required('Category is required'),
-    description: Yup.string().required('Description is required'),
-    content: Yup.string().required('Content is required'),
+    title: Yup.string().required('タイトルは必須です。'),
+    tech: Yup.string().required('テックは必須です。'), // tech を追加
+    curriculum: Yup.string().required('カリキュラムは必須です。'), // curriculum を追加
+    category: Yup.string().required('カテゴリーは必須です。'),
+    description: Yup.string().required('説明は必須です。'),
+    content: Yup.string().required('内容は必須です。'),
     coverUrl: Yup.mixed<any>().nullable().required('Cover is required'),
     // tags: Yup.array().min(2, 'Must have at least 2 tags'),
     // metaKeywords: Yup.array().min(1, 'Meta keywords is required'),
@@ -147,6 +156,39 @@ export default function PostNewEditForm({ currentPost }: Props) {
     router.push(paths.auth.firebase.login); // あなたのログインページのパスに置き換えてください
   };
 
+  // slack
+  async function sendSlackNotification(postData: PostData) {
+    const webhookUrl = process.env.NEXT_PUBLIC_SLACK_API;
+    if (!webhookUrl) {
+      console.error('Slack webhook URL is not defined.');
+      return;
+    }
+    const { title, description, category, curriculum, tech, coverUrl } = postData;
+
+    let message = `*New Post*\n*Title*: ${title}\n*Description*: ${description}\n*Category*: ${category}\n*Curriculum*: ${curriculum}\n*Tech*: ${tech}`;
+
+    // 写真のURLがある場合はメッセージに追加
+    if (coverUrl) {
+      message += `\n*Cover Image*: ${coverUrl}`;
+    }
+
+    try {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: message }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Slack notification failed: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error sending Slack notification:', error);
+    }
+  }
+
   const onSubmit = handleSubmit(async (data) => {
     // ユーザーがログインしているかチェック
     if (!user?.uid) {
@@ -186,6 +228,7 @@ export default function PostNewEditForm({ currentPost }: Props) {
         preview.onFalse();
         enqueueSnackbar(currentPost ? '更新しました！' : '投稿しました！', { variant: 'success' });
         router.push(paths.dashboard.post.root);
+        sendSlackNotification(data);
       } else {
         enqueueSnackbar('カバー画像が設定されていません。', { variant: 'error' });
       }

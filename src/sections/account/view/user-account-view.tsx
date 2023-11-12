@@ -23,7 +23,7 @@ export default function AccountView() {
   const { user } = useContext(AuthContext);
 
   const { user: currentUserProfile } = useGetUser(user?.uid); // ここのエラーが怖い
-  console.log(currentUserProfile);
+  // console.log(currentUserProfile);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
