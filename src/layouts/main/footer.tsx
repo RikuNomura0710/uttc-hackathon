@@ -21,7 +21,7 @@ import Iconify from 'src/components/iconify';
 
 const LINKS = [
   {
-    headline: 'Minimal',
+    headline: 'UTTC',
     children: [
       { name: 'About us', href: paths.about },
       { name: 'Contact us', href: paths.contact },
@@ -64,7 +64,7 @@ export default function Footer() {
         <Typography variant="caption" component="div">
           © All rights reserved
           <br /> made by
-          <Link href="https://minimals.cc/"> minimals.cc </Link>
+          <Link href="https://www.uttc.dev/">UTokyo Tech Club</Link>
         </Typography>
       </Container>
     </Box>
@@ -162,7 +162,7 @@ export default function Footer() {
         </Grid>
 
         <Typography variant="body2" sx={{ mt: 10 }}>
-          © 2021. All rights reserved
+          © 2023. All rights reserved
         </Typography>
       </Container>
     </Box>

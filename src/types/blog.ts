@@ -1,10 +1,12 @@
 // ----------------------------------------------------------------------
 
-export type IPostFilterValue = string;
+export type IPostFilterValue = string | string[];
 
 export type IPostFilters = {
   // publish: string;
   category: string;
+  curriculum: string;
+  tech: string[];
 };
 
 // ----------------------------------------------------------------------
@@ -73,6 +75,8 @@ export type IPostItem = {
   // tags: string;
   // publish: string;
   category: string;
+  tech: string;
+  curriculum: string;
   content: string;
   coverUrl: string;
   metaTitle: string;
@@ -84,7 +88,8 @@ export type IPostItem = {
   // metaKeywords: string;
   metaDescription: string;
   // comments: IPostComment[];
-  createdAt: Date;
+  CreatedAt: Date;
+  UpdatedAt: Date;
   // favoritePerson: {
   //   name: string;
   //   avatarUrl: string;

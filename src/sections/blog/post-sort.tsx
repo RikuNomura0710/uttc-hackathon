@@ -6,7 +6,9 @@ import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
-
+type SortList = {
+  [key: string]: string;
+};
 type Props = {
   sort: string;
   onSort: (newValue: string) => void;
@@ -18,9 +20,12 @@ type Props = {
 
 export default function PostSort({ sort, sortOptions, onSort }: Props) {
   const popover = usePopover();
-  const sortList: { [key: string]: string } = {
-    latest: '新しい順',
-    oldest: '古い順',
+  const sortList: SortList = {
+    latest: '作成日の新しい順',
+    oldest: '作成日の古い順',
+    updatedNewest: '更新日の新しい順',
+    updatedOldest: '更新日の古い順',
+    // ...他の並び替えオプションがあればここに追加
     popular: '人気順',
   };
 

@@ -1,3 +1,5 @@
+import { HOST_API } from 'src/config-global';
+
 import { PostEditView } from 'src/sections/blog/view';
 
 // ----------------------------------------------------------------------
@@ -20,7 +22,7 @@ export default function PostEditPage({ params }: Props) {
 
 export async function generateStaticParams() {
   try {
-    const response = await fetch('http://localhost:8080/posts');
+    const response = await fetch(`${HOST_API}/posts`);
 
     if (!response.ok) {
       throw new Error(`Network response was not ok: ${response.statusText}`);
@@ -35,7 +37,9 @@ export async function generateStaticParams() {
       id: post.id,
     }));
   } catch (error) {
+    // throw error;
     console.error('Fetch error:', error);
-    throw error;
+    // 静的生成を続行するためのデフォルト値を返す
+    return [];
   }
 }

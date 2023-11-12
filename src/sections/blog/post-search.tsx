@@ -21,15 +21,15 @@ type Props = {
   query: string;
   results: IPostItem[];
   onSearch: (inputValue: string) => void;
-  hrefItem: (title: string) => string;
+  hrefItem: (ID: string) => string;
   loading?: boolean;
 };
 
 export default function PostSearch({ query, results, onSearch, hrefItem, loading }: Props) {
   const router = useRouter();
 
-  const handleClick = (title: string) => {
-    router.push(hrefItem(title));
+  const handleClick = (ID: string) => {
+    router.push(hrefItem(ID));
   };
 
   const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -107,7 +107,8 @@ export default function PostSearch({ query, results, onSearch, hrefItem, loading
               }}
             />
 
-            <Link key={inputValue} underline="none" onClick={() => handleClick(post.title)}>
+            {/* <Link key={inputValue} underline="none" onClick={() => handleClick(post.ID)}> */}
+            <Link href={hrefItem(post.ID)} underline="none">
               {parts.map((part, index) => (
                 <Typography
                   key={index}
