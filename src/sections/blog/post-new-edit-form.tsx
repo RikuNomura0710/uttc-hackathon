@@ -5,18 +5,22 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useMemo, useState, useEffect, useContext, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
-import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import { MenuItem } from '@mui/material';
 import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
 import Dialog from '@mui/material/Dialog';
+import Select from '@mui/material/Select';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
+import InputLabel from '@mui/material/InputLabel';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DialogContentText from '@mui/material/DialogContentText';
 
@@ -31,12 +35,7 @@ import { AuthContext } from 'src/auth/context/firebase/auth-context';
 
 import { CustomFile } from 'src/components/upload';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, {
-  RHFEditor,
-  RHFUpload,
-  RHFTextField,
-  RHFAutocomplete,
-} from 'src/components/hook-form';
+import FormProvider, { RHFEditor, RHFUpload, RHFTextField } from 'src/components/hook-form';
 
 import { IPostItem } from 'src/types/blog';
 
@@ -66,6 +65,7 @@ export default function PostNewEditForm({ currentPost }: Props) {
     title: Yup.string().required('Title is required'),
     tech: Yup.string().required('Tech is required'), // tech を追加
     curriculum: Yup.string().required('Curriculum is required'), // curriculum を追加
+    category: Yup.string().required('Category is required'),
     description: Yup.string().required('Description is required'),
     content: Yup.string().required('Content is required'),
     coverUrl: Yup.mixed<any>().nullable().required('Cover is required'),
@@ -80,6 +80,7 @@ export default function PostNewEditForm({ currentPost }: Props) {
     () => ({
       title: currentPost?.title || '',
       tech: currentPost?.tech || '',
+      category: currentPost?.category || '',
       curriculum: currentPost?.curriculum || '',
       description: currentPost?.description || '',
       content: currentPost?.content || '',
@@ -133,35 +134,39 @@ export default function PostNewEditForm({ currentPost }: Props) {
     }
 
     try {
-      const { coverUrl, ...restData } = data; // coverUrlを除外
-      // ここでauthorIdを追加しています
-      const postData = { ...restData, authorId: user.uid };
+      // coverUrlがnullまたは空でない場合のみ、データを処理
+      if (data.coverUrl) {
+        // ここでauthorIdを追加しています
+        const postData = { ...data, authorId: user.uid };
 
-      const url = currentPost
-        ? `${HOST_API}/edit/${currentPost.ID}` // 更新用URLには投稿のIDを使用
-        : `${HOST_API}/create-post`; // 新規作成用URL
-      const method = currentPost ? 'PUT' : 'POST'; // 更新はPUT、新規作成はPOST
+        const url = currentPost
+          ? `${HOST_API}/edit/${currentPost.ID}` // 更新用URLには投稿のIDを使用
+          : `${HOST_API}/create-post`; // 新規作成用URL
+        const method = currentPost ? 'PUT' : 'POST'; // 更新はPUT、新規作成はPOST
 
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          // 必要に応じて認証ヘッダーを追加する
-          // 'Authorization': `Bearer ${user.token}`
-        },
-        body: JSON.stringify(postData),
-      });
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            // 必要に応じて認証ヘッダーを追加する
+            // 'Authorization': `Bearer ${user.token}`
+          },
+          body: JSON.stringify(postData),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Network response was not ok: ${errorData.error}`);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`Network response was not ok: ${errorData.error}`);
+        }
+
+        // 投稿が成功したらフォームをリセットし、メッセージを表示
+        reset();
+        preview.onFalse();
+        enqueueSnackbar(currentPost ? '更新しました！' : '投稿しました！', { variant: 'success' });
+        router.push(paths.dashboard.post.root);
+      } else {
+        enqueueSnackbar('カバー画像が設定されていません。', { variant: 'error' });
       }
-
-      // 投稿が成功したらフォームをリセットし、メッセージを表示
-      reset();
-      preview.onFalse();
-      enqueueSnackbar(currentPost ? '更新しました！' : '投稿しました！', { variant: 'success' });
-      router.push(paths.dashboard.post.root);
     } catch (error) {
       console.error(error);
       enqueueSnackbar('投稿中にエラーが発生しました。', { variant: 'error' });
@@ -285,86 +290,53 @@ export default function PostNewEditForm({ currentPost }: Props) {
             <RHFTextField name="curriculum" label="カリキュラム" />
 
             <RHFTextField name="category" label="カテゴリー" /> */}
-            <RHFAutocomplete
-              name="tech"
-              label="タグ"
-              placeholder="技術を選択"
-              multiple
-              freeSolo
-              options={techOptions}
-              getOptionLabel={(option) => option}
-              renderOption={(props, option) => (
-                <li {...props} key={option}>
-                  {option}
-                </li>
-              )}
-              renderTags={(selected, getTagProps) =>
-                selected.map((option, index) => (
-                  <Chip
-                    {...getTagProps({ index })}
-                    key={option}
-                    label={option}
-                    size="small"
-                    color="info"
-                    variant="soft"
-                  />
-                ))
-              }
-            />
+            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
+              <InputLabel>Tech</InputLabel>
+              <Select
+                value={values.tech}
+                onChange={(e) => setValue('tech', e.target.value)}
+                input={<OutlinedInput label="Tech" />}
+                sx={{ textTransform: 'capitalize' }}
+              >
+                {techOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-            <RHFAutocomplete
-              name="tech"
-              label="カリキュラム"
-              placeholder="カリキュラムを選択"
-              multiple
-              freeSolo
-              options={curriculumOptions}
-              getOptionLabel={(option) => option}
-              renderOption={(props, option) => (
-                <li {...props} key={option}>
-                  {option}
-                </li>
-              )}
-              renderTags={(selected, getTagProps) =>
-                selected.map((option, index) => (
-                  <Chip
-                    {...getTagProps({ index })}
-                    key={option}
-                    label={option}
-                    size="small"
-                    color="info"
-                    variant="soft"
-                  />
-                ))
-              }
-            />
+            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
+              <InputLabel>Curriculum</InputLabel>
+              <Select
+                value={values.curriculum}
+                onChange={(e) => setValue('curriculum', e.target.value)}
+                input={<OutlinedInput label="Curriculum" />}
+                sx={{ textTransform: 'capitalize' }}
+              >
+                {curriculumOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-            <RHFAutocomplete
-              name="category"
-              label="カテゴリー"
-              placeholder="カテゴリーを選択"
-              multiple
-              freeSolo
-              options={categoryOptions}
-              getOptionLabel={(option) => option}
-              renderOption={(props, option) => (
-                <li {...props} key={option}>
-                  {option}
-                </li>
-              )}
-              renderTags={(selected, getTagProps) =>
-                selected.map((option, index) => (
-                  <Chip
-                    {...getTagProps({ index })}
-                    key={option}
-                    label={option}
-                    size="small"
-                    color="info"
-                    variant="soft"
-                  />
-                ))
-              }
-            />
+            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={values.category}
+                onChange={(e) => setValue('category', e.target.value)}
+                input={<OutlinedInput label="Category" />}
+                sx={{ textTransform: 'capitalize' }}
+              >
+                {categoryOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <RHFTextField name="description" label="説明" multiline rows={3} />
 
